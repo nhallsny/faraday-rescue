@@ -61,7 +61,7 @@ Test instructions -->
 
 ## Goals
 
-Beautiful, complex objects of the 21st century require modern techniques to keep them running. Car restoration has been around as long as there have cars, bicycles are no different. Unlike classic bicycles, e-bikes tend to become e-waste at the first sign of trouble, especially if the company isn't around to provide parts or documentation. I hope:
+Beautiful, complex objects of the 21st century require modern techniques to keep them running. Car restoration has been around as long as there have cars, bicycles are no different. However, unlike classic bicycles, e-bikes tend to become e-waste at the first sign of trouble, especially if the company isn't around to provide parts or documentation. In putting this info out there, I hope:
 + Bicycle companies will consider putting documentation for designs online before shutting off part supply forever
 + Motivated enthusiasts (like myself) will consider taking the plunge to keep machines they value alive for another few years.
 
