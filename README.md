@@ -41,20 +41,18 @@ Detailed updates or build instructions are better suited for the subfolders such
 
 ```
 .
-|--- Build
-|--- Docs
-|--- Results
-|--- Software
+|--- build
+|--- referece
+|--- software
 | LICENSE
 | README.md
 
 ```
 
 The purpose of each subfolder is explained below:
-+ Build: Contains all the (binary) design files that are needed for the hardware.
-+ Docs: Contains the documentation of the project: background information, sources, warnings, and build instructions. 
-+ Results: For measurement or functional devices, it is good to report some results as a benchmark for others who try to replicate the project.
-+ Software: source for STM32 code and tools used for debugging
++ build: Contains all the (binary) design files needed to make the battery and PCB.
++ reference: contains material from the original company as well as teardown photos from reverse engineering the original boards
++ software: contains firmware for the STM32 on the BMS as well as engineering tools used
 
 ## Build instructions
 Build instructions -->
