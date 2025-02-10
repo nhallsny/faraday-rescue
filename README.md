@@ -12,7 +12,7 @@ Like the original design, this battery is a 12S 2P 18650 based design. It utiliz
 
 Why are their owners sad? The original battery design has a quiescent draw of around 10mW even when 'off'. While it might not sound like much, that tiny amount of power will drain batteries from 0% state of charge to "bricked" i.e. copper dendrite formation in 2-3 weeks. Left unplugged over the winter, or even a long vacation, the batteries would be irreperably harmed.
 
-How does this battery fix this? Modern technology! When the bike was designed, there were no quiescent-optimized battery monitoring chips on the market that could measure 12 cells. The original designer chose an LTC6802-G...a good choice at the time, but designed for electric vehicle batteries with oodles of amp-hours. It doesn't help that the microcontroller on the BMS never sleeps. My measurements:
+How does this battery fix the sleep problem? Modern technology! When the bike was designed, there were no quiescent-optimized battery monitoring chips on the market that could measure 12 cells. The original designer chose an LTC6802-G...a good choice at the time, but designed for electric vehicle batteries with oodles of amp-hours. It doesn't help that the microcontroller on the BMS never sleeps. By using a low-power processor, sleep states, and a TI BQ 16-cell BMS chip, I was able to achieve:
 + Original design, off: 300uA
 + This design, off: 3uA
 
