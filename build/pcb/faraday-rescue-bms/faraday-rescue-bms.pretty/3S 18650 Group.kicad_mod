@@ -1,0 +1,169 @@
+(footprint "3S 18650 Group"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(locked yes)
+	(layer "F.Cu")
+	(descr "car blade fuse direct solder")
+	(tags "car blade fuse")
+	(property "Reference" "BT1"
+		(at 3.5 -9.5 0)
+		(layer "F.SilkS")
+		(uuid "23079f9f-90ad-488d-ab4c-c2cae2710a75")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "battery_pod"
+		(at 6 0 0)
+		(layer "F.Fab")
+		(uuid "7c1d7037-5b8e-44be-a0c3-848fda7fa737")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" "pcb_battery:3S 18650 Group"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "fc9d764e-8f71-4286-b1ad-0ac4525e7060")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "33dadaaf-0e5a-4d61-8e67-f32ee0c982d8")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "3S battery"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f1fd20fa-2aa6-4bce-af4a-5310e64ae09e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -1 -11.5)
+		(end 66.25 -11.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "508ca784-db78-43fb-942b-1d38abded572")
+	)
+	(fp_line
+		(start -1 11.5)
+		(end -1 -11.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "7d59e2fc-0403-4c7b-a004-3f2591c41ad1")
+	)
+	(fp_line
+		(start 66.25 -11.5)
+		(end 66.25 11.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "10dcb083-d175-49b3-bc8a-8773543e130c")
+	)
+	(fp_line
+		(start 66.25 11.5)
+		(end -1 11.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "eb696fbb-f5d4-42d4-bee2-4eeb0955f225")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 6.5 -7.5 0)
+		(layer "F.Fab")
+		(uuid "648eec54-b9d6-481a-b0f4-e57565bd944f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole oval
+		(at 0 7.95 90)
+		(size 6.6 1.4)
+		(drill oval 6 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(zone_connect 2)
+		(uuid "17cb4e10-b40a-424a-82e7-e953d8fb2cb0")
+	)
+	(pad "2" thru_hole oval
+		(at 65.25 7.95 90)
+		(size 6.6 1.4)
+		(drill oval 6 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(zone_connect 2)
+		(uuid "b211747e-eb16-4a97-a3a0-ca6c569fa923")
+	)
+	(pad "3" thru_hole oval
+		(at 0 -7.95 90)
+		(size 6.6 1.4)
+		(drill oval 6 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(zone_connect 2)
+		(uuid "4bbcbd11-4c4b-403d-9a80-2989b6dc5e84")
+	)
+	(pad "4" thru_hole oval
+		(at 65.25 -7.95 90)
+		(size 6.6 1.4)
+		(drill oval 6 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(zone_connect 2)
+		(uuid "d97c966b-2e94-48f2-9d80-ed29651289be")
+	)
+	(model "${KICAD8_3DMODEL_DIR}/Fuse.3dshapes/Fuse_Blade_ATO_directSolder.wrl"
+		(offset
+			(xyz 4.571999931 0 0)
+		)
+		(scale
+			(xyz 0.39 0.39 0.39)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)
