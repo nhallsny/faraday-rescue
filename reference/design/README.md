@@ -77,10 +77,33 @@ The STM32 and RS485 driver are powered off of REG1 from the BQ76972. REG1 has a 
 |STM32L0 | 6mA |
 |RS485 Driver | Vcc/2 / 120 Ohms = 13mA |
 |Debug LEDs | 1mA * 4 |
+|           | Total = 23mA|
 
-# Charge pump
+REG1 dips a few hundred mV during heavy transmit periods, especially when using the implemented printf funtion for debugging.
+
+At the maximum power draw (30mA), the linear regulator efficincy is laughable (1.3W!), but as long as the BJT used is well coupled to the PCB the deltaT is managable. In normal operation, the LEDs are unused and the RS485 driver is used intermittently.
+
+"""Note - the linear regulator is quite sensitive to leakage currents from skin. Touching the 
+
+## Charge pump
 
 The charge pump takes in battery voltage and boosts it up 10V to provide a high-side drive for the back to back NFETs. This circuit is almost entirely based on the BS76972 reference schematic.
+
+## Sleep/Wake
+
+The design must allow the bike to be woken up in two ways
+1. User presses wake button at rear of bike
+2. User connects charge cable
+
+To achieve button wake (1), the STM32 uses STOP mode and configures the button active-low as a wake interrupt. Upon waking, the STM32 resets, wakes up the BQ chip, configures it, checks for any error codes, then allows the BQ chip to turn on the back-to-back FETs if allowed.
+
+To achieve charge cable wake (2), the BQ chip is placed into DEEPSLEEP. If a charger is connected (logic level voltage on CD pin), the BQ chip exists DEEPSLEEP and switches to NORMAL. The ALERT output from the BQ chip is configured to only go high when an ADC measurement is ready - this pin goes high a few 10s of milliseconds after the chip boots and is used as a wake interrupt for the STM32.
+
+The corrolary of wake is sleep. The STM32, after a few minutes of inactivity or a user requests the off state, configures the BQ chip for DEEPSLEEP, sets the appropriate interrupts, then enters STOP mode. STOP mode is used because the other STM32 power modes do not support active-low wake interrupts.
+
+[Insert diagram]
+![image](https://github.com/user-attachments/assets/34afd942-469b-46e9-9bf7-b9f8c9d57aac)
+
 
 
 
