@@ -14,4 +14,11 @@ The mode selector has 4 pins:
 
 The mode selector is 'waterproofed' with VHB tape. Prying gently at it after removing the screws will expose the innards.
 
+Replacing the VHB is hard without lasercutting the VHB into the right shape - I used DOW 738 sealant when I put it back together.
+
+## Key Parts
+MCU: N51822-QFAA
+Transciever: MAX3060E
+ePaper Display: SCD722003
+
 
