@@ -14,7 +14,8 @@ In the PCB design, the goals were:
 
 In the software design, the goals were:
 - No critical decision making, delgate all important functions to the Battery Management IC
-- Reset at every use (avoid bugs from long-term operation)
+- Reset at every use (avoid bugs from long-term operation).
+- Faraday power button must cause a reset
 - When in doubt, reset
 
 ## Module design
@@ -22,6 +23,8 @@ In the software design, the goals were:
 The original Faraday design featured two module groups - 8x 2P side-by-side groups and 4x 2P end-to-end modules. This arragement results in an intricate series of specialized nickel strips to build the voltage.
 
 ## Cell Selection
+
+I chose a Samsung 35E 18650 for energy density and capability to meet a 10A continuous discharge (in the 2P config).
 
 |Parameter|Limit|
 |---------|-----|
@@ -66,6 +69,14 @@ This was a real challenge. There are surprisingly few RS485 drivers that meet th
 ## Power supplies
 
 # Linear regulator
+
+The STM32 and RS485 driver are powered off of REG1 from the BQ76972. REG1 has a recommended current of 30mA and an minimum of 47mA at 0V. Fortunately, the STM32 uses a maximum of 6mA. The power budget is:
+
+|Function|Power|
+|--------|-----|
+|STM32L0 | 6mA |
+|RS485 Driver | Vcc/2 / 120 Ohms = 13mA |
+|Debug LEDs | 1mA * 4 |
 
 # Charge pump
 
