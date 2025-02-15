@@ -1,4 +1,4 @@
-# faraday/reference/teardowns/mode_selector
+# faraday-rescue/reference/teardowns/mode_selector
 
 ## Teardown Notes
 
