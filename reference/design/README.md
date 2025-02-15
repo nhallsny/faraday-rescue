@@ -4,7 +4,7 @@
 
 Much of this effort was born out of the tragically intricate and labor-intensive process of attempting to replace cells on a borked battery pack. The original design required a lot of free-hand welding, small, easy to pinch wires, and opportunities for shorting. The original battery protection system also had high quiescent draw which rapidly bricked the pack if left un-tended. In re-doing the design, the goals were:
 - Simplify module welding and bussing
-- Achieve a quiescent draw in the single digit uA to allow for multi-year storage
+- Achieve a quiescent draw in the low uA range to allow for multi-year storage. This was achieved with a sleep power of around 480uW normally and <50uW in undervoltage lockout.
 - Learn embedded software and the modern (as of 2025, anyways) options for hobby electronics projects.
 
 In the PCB design, the goals were:
@@ -100,6 +100,8 @@ To achieve button wake (1), the STM32 uses STOP mode and configures the button a
 To achieve charge cable wake (2), the BQ chip is placed into DEEPSLEEP. If a charger is connected (logic level voltage on CD pin), the BQ chip exists DEEPSLEEP and switches to NORMAL. The ALERT output from the BQ chip is configured to only go high when an ADC measurement is ready - this pin goes high a few 10s of milliseconds after the chip boots and is used as a wake interrupt for the STM32.
 
 The corrolary of wake is sleep. The STM32, after a few minutes of inactivity or a user requests the off state, configures the BQ chip for DEEPSLEEP, sets the appropriate interrupts, then enters STOP mode. STOP mode is used because the other STM32 power modes do not support active-low wake interrupts.
+
+The RS485 chip is put into sleep mode by setting RE high and DE low.
 
 [Insert diagram]
 ![image](https://github.com/user-attachments/assets/34afd942-469b-46e9-9bf7-b9f8c9d57aac)
