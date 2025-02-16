@@ -1,4 +1,4 @@
-# faraday-rescue/reference/design design doc
+# faraday-rescue/reference/design - Design Doc
 
 ## Philosophy
 
@@ -114,7 +114,6 @@ The corrolary of wake is sleep. The STM32, after a few minutes of inactivity or 
 
 The RS485 chip is put into sleep mode by setting RE high and DE low.
 
-[Insert diagram]
 ![image](https://github.com/user-attachments/assets/34afd942-469b-46e9-9bf7-b9f8c9d57aac)
 
 
