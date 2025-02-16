@@ -1,8 +1,8 @@
-# faraday-rescue/reference/design Design Doc
+# faraday-rescue/reference/design design doc
 
 ## Philosophy
 
-Much of this effort was born out of the tragically intricate and labor-intensive process of attempting to replace cells on a borked battery pack. The original design required a lot of free-hand welding, small, easy to pinch wires, and opportunities for shorting. The original battery protection system also had high quiescent draw which rapidly bricked the pack if left un-tended. In re-doing the design, the goals were:
+Much of this effort was born out of the rather nerve-wracking and labor intensive process of attempting to replace cells on a borked battery pack. The original design required a lot of freehand welding, easy to pinch wires, and opportunities for shorting. The original battery protection system also had high quiescent draw which rapidly bricked the pack if left un-tended. In re-doing the design, the goals were:
 - Simplify module welding and bussing
 - Achieve a quiescent draw in the low uA range to allow for multi-year storage. This was achieved with a sleep power of around 480uW normally and <50uW in undervoltage lockout.
 - Learn embedded software and the modern (as of 2025, anyways) options for hobby electronics projects.
@@ -18,9 +18,20 @@ In the software design, the goals were:
 - Faraday power button must cause a reset
 - When in doubt, reset
 
-## Module design
+## String and module design
 
 The original Faraday design featured two module groups - 8x 2P side-by-side groups and 4x 2P end-to-end modules. This arragement results in an intricate series of specialized nickel strips to build the voltage.
+
+This diagram shows the original (top) vs this design (bottom) cell layout.
+
+![image](https://github.com/user-attachments/assets/e916ecc8-f00d-4344-9355-900dcf13f602)
+
+All of the series/parallel wiring takes place inside the PCB. The routing is rather complex but fortunately, complexity is free on a PCB. The PCB has wide traces (generally at least 10mm and 2 oz copper for a maximum T_rise of around 10C.
+![image](https://github.com/user-attachments/assets/f5ff47eb-c867-453f-9188-1380af13215c)
+
+Each individual module is identical with the voltage building as shown.
+![image](https://github.com/user-attachments/assets/9509ed13-7c89-43e8-a142-7d9aa86311a0)
+
 
 ## Cell Selection
 
