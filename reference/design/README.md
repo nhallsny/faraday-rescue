@@ -116,6 +116,22 @@ The RS485 chip is put into sleep mode by setting RE high and DE low.
 
 ![image](https://github.com/user-attachments/assets/34afd942-469b-46e9-9bf7-b9f8c9d57aac)
 
+## Fusing
+
+In any battery system, fusing needs a bit of thought. The BQ chip provides a variety of current/time thresholds. I selected a slow-blow ceramic fuse and allow the BQ chip to handle various types of shorts.
+
+Normal events include:
+- 9A continuous current from the motor controller
+- 60A, ~150us pulse during the turn-on transient
+
+Everything else is abnormal. Ideally, most overcurrents are resettable. Indeed, the BQ chip has a mechanism to handle latching and non-latching short circuit events and return to normal operations.
+
+The fuse coordination chart is shown below:
+![image](https://github.com/user-attachments/assets/207a5157-588e-45cf-99eb-21323ed28f79)
+
+
+
+
 
 
 
