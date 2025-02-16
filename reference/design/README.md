@@ -127,7 +127,31 @@ Normal events include:
 Everything else is abnormal. Ideally, most overcurrents are resettable. Indeed, the BQ chip has a mechanism to handle latching and non-latching short circuit events and return to normal operations.
 
 The fuse coordination chart is shown below:
-![image](https://github.com/user-attachments/assets/207a5157-588e-45cf-99eb-21323ed28f79)
+![image](https://github.com/user-attachments/assets/e9b58102-b62d-4bb8-b80f-9ff4d0aa8505)
+
+## PCB Design
+
+The PCB design is extremely constrained by the 41mm diameter tube the batteries must fit into. As such, it must be thin and long
+
+![image](https://github.com/user-attachments/assets/7c7892c1-3782-4779-9262-203f39ab59b2)
+
+The connectors, test points, fuse, etc must all fit within the narrow arc on top of the cells.
+
+![image](https://github.com/user-attachments/assets/142df202-422b-4b9e-b336-314c62dcb626)
+
+There are three board-mount thermistors which touch the cells with a bit of thermal gap pad.
+
+![image](https://github.com/user-attachments/assets/963ff0c3-e571-4a99-a2b0-64ba4bc8628e)
+
+The board has three connectors:
+- XT30 for the main battery connection
+- 4 pin Molex Picoblade for the comms connector
+- 5 pin Molex Picoblade for the programming connector
+
+![image](https://github.com/user-attachments/assets/ed6b9a84-1539-4170-9a6f-1923d0bb7ae0)
+
+
+
 
 
 
