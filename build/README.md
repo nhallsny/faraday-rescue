@@ -11,12 +11,12 @@
 | end_cap-1, non-wire end | 15% GF ASA End Cap, Printed  | 1        | DIY                                                                   |
 | PCB, Long               | Custom PCBA                  | 1        | JLCPCB                                                                |
 | PCB, Short              | Custom PCB                   | 1        | JLCPCB                                                                |
-| Keyelco XXX             | Jumpers between PCBs         | 4        | Digikey                                                               |
+| Keyelco 5104            | Jumpers between PCBs         | 4        | Digikey                                                               |
 | 42mmx0.9mm thickness Ti | Tube, 568mm long             | 1        | https://www.ebay.com/itm/174293717819  |
 | Need part number        | Heatshrink, 2.5"             | 1        | DIY                                                                   |
 | tube_cap-v14            | Aluminum tubing end cap      | 2        | JLCPCB                                                                |
 | 1289N171                | End-cap o-ring               | 2        | https://www.mcmaster.com/1289N171/                                    |
-| Need part number        | O-ring Lubricant, Silicone   | 1        | Home Depot                                                            |
+| Need part number        | O-ring Lubricant, Silicone   | 1        | Local hardware store                                                  |
 | Dow 738                 | RTV Sealant                  | 1        | https://www.mcmaster.com/1832A51/                                     |
 | 91292A115               | M3 Bolts                     | 18       | https://www.mcmaster.com/91292A115/                                   |
 | 93625A100               | M3 Locknuts                  | 18       | https://www.mcmaster.com/93625A100/                                   |
