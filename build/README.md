@@ -87,7 +87,7 @@ Test fit the end-cap to make sure it fits flush
 Heat-set the M4 insert into the wire-side end cap
 ![image](https://github.com/user-attachments/assets/7db04cd3-1199-4924-aa9c-dd19e0a73ce5)
 
-Drill 4 holes into the end cap based on the wire sizes.
+Drill 5 holes into the end cap based on the wire sizes. TODO image which shows all 5 holes
 _Note - the wires must be lined up in order to avoid crosses. There isn't much space in the end_
 
 ![image](https://github.com/user-attachments/assets/5cc14871-ce2e-40fc-b46c-27e73f86d825)
@@ -116,18 +116,22 @@ Pot the back of the housing with DOW 738. Use a toothpick to make sure that the 
 
 Wait for the DOW 738 to dry
 
-Flash the .hex file onto the STM32 and test your new battery!
+Flash the .hex file onto the STM32 and test your new battery! If you have flashed with LEDS = 1, then the CHG and DSG lights should light up. If not, try shorting BUTTON and GND. TODO image
+_Note - the LEDs consume significant power and cause heating of the linear reg. I suggest flashing with LEDS = 0 after debugging_
+_Note 2 - I made a 'faraday on/off' harness with RS485 and the on/off button broken out. See 'tools' section below_
+![image](https://github.com/user-attachments/assets/9f96c159-753c-4f99-91f4-1391e0d92ff2)
 
-When satisfied, heat-shrink the battery.
 
-Apply a light coat of o-ring lubricant on the o-rings and install on the aluminum end caps. 
+When satisfied, heat-shrink the battery. TODO image
 
-Install the wire-side cap (if you haven't already). Use the small 4mm ID o-ring to achieve sealing with the M4 bolt.
+Apply a light coat of o-ring lubricant on the o-rings and install on the aluminum end caps.  TODO image
 
-Slide the tube over the entire battery. Some gentle pressure and a light coating of grease may be required.
+Install the wire-side cap (if you haven't already). Use the small 4mm ID o-ring to achieve sealing with the M4 bolt. TODO image
+
+Slide the tube over the entire battery. Some gentle pressure and a light coating of grease may be required. TODO image
 _Note - if too much force is used, the heatshrink may bunch and rip, possibly shorting the battery. Go gently.
 
-Bolt on the remaining end-cap with o-ring and lubriant. Make sure that the o-ring is engaged with the tube.
+Bolt on the remaining end-cap with o-ring and lubriant. Make sure that the o-ring is engaged with the tube. TODO image
 
 Final test procedure
 | Test                    |Expected Result               | Tool |
@@ -140,6 +144,9 @@ Final test procedure
 # Tools
 
 ## ST-Link to Julet Adapter
+
+Use this to program the processor
+
 | Part Number             | Description                  | Quantity | Link                                                                  |
 |-------------------------|------------------------------|----------|-----------------------------------------------------------------------|
 | ST-Link                 | PRogrammer                   | 1        | Digikey                |
@@ -148,6 +155,21 @@ Final test procedure
 | Julet 5-pin Green connector, Male    | Crimps                 | 1        | Digikey                |
 
 Note that you will need to double crimp the 3.3V wire (TODO insert image)
+
+## Button Harness
+
+Use this to turn the battery on and off and connect it to RS485
+| Part Number             | Description                  | Quantity | Link                                                                  |
+|-------------------------|------------------------------|----------|-----------------------------------------------------------------------|
+| Waveshare 17286            | RS485 to USB Converter         | 1        | Amazon             |
+| No Part Number            | Julet 4-pin blue connector, female              | 1        | Amazon                |
+| Any momentary switch            | Crimps                 | 1        | Amazon               |
+
+Note - I do not know if the cable colors are standardized. Check your pinouts! TODO add diagram of pin numbers
+PCB Pin 1 - GND----------Red------GND----BUTTON
+PCB Pin 2 - BUTTON ------Green----BUTTON
+PCB Pin 3 - RS485 A -----Black----RS485 A
+PCB Pin 4 - RS485 B -----White----RS485 B
 
 ## Sizer Ring
 I suggest printing a 40mm sizer ring to pass over the battery prior to heat-shrinking
