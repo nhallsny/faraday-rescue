@@ -94,7 +94,7 @@ REG1 dips a few hundred mV during heavy transmit periods, especially when using 
 
 At the maximum power draw (30mA), the linear regulator efficincy is laughable (1.3W!), but as long as the BJT used is well coupled to the PCB the deltaT is managable. In normal operation, the LEDs are unused and the RS485 driver is used intermittently.
 
-"""Note - the linear regulator is quite sensitive to leakage currents from skin. Touching the 
+_Note - the linear regulator is quite sensitive to leakage currents from skin. Touching the caps may interrupt the supply to the BQ chip, resetting the STM32._
 
 ## Charge pump
 
