@@ -56,7 +56,7 @@ RTC_HandleTypeDef hrtc;
 
 /* Program Options */
 #define DEBUG 0 //Debug mode disables RS485 communications to the bike and instead enables debug messages over RS485, including printf.
-#define LEDS 1 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
+#define LEDS 0 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
 #define WATCHDOG 1 //set to 1 to enable watchdog. Good for production, bad for debugging
 
 /*BQ Parameters */
@@ -1248,7 +1248,7 @@ uint8_t UART_PrepBatteryStatusMessage2() {
 	UART_TxData[1] = 0x03;
 	UART_TxData[2] = 0x02;
 	UART_TxData[3] = 0x00;
-	UART_TxData[4] = 0x1E;
+	UART_TxData[4] = 0x19;
 
 	//add crc in reverse byte order
 	uint16_t crc = UART_CRC(UART_TxData, 5);

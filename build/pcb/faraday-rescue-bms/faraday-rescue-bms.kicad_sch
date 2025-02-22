@@ -1952,7 +1952,7 @@
 			)
 		)
 		(instances
-			(project "pcb_battery"
+			(project "faraday-rescue-bms"
 				(path "/4f87dd6b-7f8d-4b3b-a563-253bf00bf5e1"
 					(page "3")
 				)
@@ -1990,7 +1990,7 @@
 			)
 		)
 		(instances
-			(project "pcb_battery"
+			(project "faraday-rescue-bms"
 				(path "/4f87dd6b-7f8d-4b3b-a563-253bf00bf5e1"
 					(page "2")
 				)
@@ -2028,7 +2028,7 @@
 			)
 		)
 		(instances
-			(project "pcb_battery"
+			(project "faraday-rescue-bms"
 				(path "/4f87dd6b-7f8d-4b3b-a563-253bf00bf5e1"
 					(page "4")
 				)

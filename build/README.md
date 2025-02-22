@@ -4,12 +4,12 @@
 | Part Number             | Description                  | Quantity | Link                                                                  |
 |-------------------------|------------------------------|----------|-----------------------------------------------------------------------|
 | INR18650-35E            | Batteries                    | 24       | https://www.18650batterystore.com/products/samsung-35e                |
-| Nickel Tab, Small       | Custom Nickel Tabs, 0.15mm   | 16       | DIY                                                                   |
-| Nickel Tab, Large       | Custom Nickel Tabs, 0.15mm   | 16       | DIY                                                                   |
-| module_end-2            | Module end caps              | 16       | 3D Print 10% GF ASA                                                                   |
-| end_cap-1, wire end     | Module stack end cap, wire side | 1        | 3D Print 10% GF ASA                                                               |
-| end_cap-1, non-wire end | Module stack end cap, non-wire side  | 1        | 3D Print 10% GF ASA                                                         |
-| power_connector         | Battery to faraday power connector  | 1        | 3D Print 10% GF ASA                                                           |
+| weld_tab_large-v42       | Custom Nickel Tabs, 0.15mm   | 16       | DIY                                                                   |
+| weld_tab_small-v42       | Custom Nickel Tabs, 0.15mm   | 16       | DIY                                                                   |
+| module_end-v41           | Module end caps              | 16       | 3D Print 10% GF ASA                                                                   |
+| end_bracket_wire_end-v31    | Module stack end cap, wire side | 1        | 3D Print 10% GF ASA                                                               |
+| end_bracket_non_wire_end-v10| Module stack end cap, non-wire side  | 1        | 3D Print 10% GF ASA                                                         |
+| power_connector_v11     | Battery to faraday power connector  | 1        | 3D Print 10% GF ASA                                                           |
 | PCB, Long               | Custom PCBA                  | 1        | JLCPCB                                                                |
 | PCB, Short              | Custom PCB                   | 1        | JLCPCB                                                                |
 | Keyelco 5104            | Jumpers between PCBs         | 4        | Digikey                                                               |
@@ -23,6 +23,7 @@
 | tube_cap-v14            | Aluminum tubing end cap      | 2        | JLCPCB                                                                |
 | 1289N171                | End-cap o-ring               | 2        | https://www.mcmaster.com/1289N171/                                    |
 | Need part number        | O-ring Lubricant, Silicone   | 1        | Local hardware store                                                  |
+| 97163A152               | Insert, M4, 5mm long         | 2        | https://www.mcmaster.com/97163A152/                                   |
 | Dow 738                 | RTV Sealant                  | 1        | https://www.mcmaster.com/1832A51/                                     |
 | 91292A027               | M3 Bolts                     | 18       | https://www.mcmaster.com/91292A027/                                   |
 | 93625A100               | M3 Locknuts                  | 18       | https://www.mcmaster.com/93625A100/                                   |
