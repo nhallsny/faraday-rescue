@@ -1,5 +1,22 @@
 # faraday-rescue/build Build Guide
 
+## Intro
+
+This is a build guide for assembling a faraday rescue battery.
+
+## Required Tools
+- General small hand tools - hex wrenches, x-acto knife, wire cutters/strippers
+- 18650 Spot welder
+- Soldering iron with chisel tip
+- Solder
+- Fine-pitch crimper (for Molex Picoblade)
+- Large-pitch crimper (for TE 1.5mm crimps)
+- Heat gun
+- Isopropanol wipes
+- Calipers
+- Button Harness (see below)
+- STLink to Green Julet Adapter Harness (see below)
+
 ## Bill of Materials
 | Part Number             | Description                  | Quantity | Link                                                                  |
 |-------------------------|------------------------------|----------|-----------------------------------------------------------------------|
@@ -12,6 +29,7 @@
 | power_connector_v11     | Battery to faraday power connector  | 1        | 3D Print 10% GF ASA                                                           |
 | PCB, Long               | Custom PCBA                  | 1        | JLCPCB                                                                |
 | PCB, Short              | Custom PCB                   | 1        | JLCPCB                                                                |
+| tube_cap-v14            | Aluminum tubing end cap      | 2        | JLCPCB                                                                |
 | Keyelco 5104            | Jumpers between PCBs         | 4        | Digikey                                                               |
 | Wire 16ga               | Power wire, red/black        | 2        | Digikey                                                               |
 |Molex / 0500798100       |26-28 Awg Picoblade Crimp     | 9        | Digikey |
@@ -19,10 +37,9 @@
 |Molex / 0510210400       |CONN RCPT HSG 4POS 1.25MM     |1         | Digikey |
 |TE 929990-1              | CONTACT SOCKET 13-17AWG CRIMP|2         | Digikey |
 | 42mmx0.9mm thickness Ti | Tube, 568mm long             | 1        | https://www.ebay.com/itm/174293717819  |
-| a18051400ux0423     | Thin Heatshrink PVC, 700mm flat|            | 1        | DIY                                                                   |
-| tube_cap-v14            | Aluminum tubing end cap      | 2        | JLCPCB                                                                |
+| a18051400ux0423     | Thin Heatshrink PVC, 70mm flat|            | 1        | Amazon                                                                   |
 | 1289N171                | End-cap o-ring               | 2        | https://www.mcmaster.com/1289N171/                                    |
-| Need part number        | O-ring Lubricant, Silicone   | 1        | Local hardware store                                                  |
+| O-ring lube     | O-ring Lubricant, Silicone   | 1        | Local hardware store                                                  |
 | 97163A152               | Insert, M4, 5mm long         | 2        | https://www.mcmaster.com/97163A152/                                   |
 | Dow 738                 | RTV Sealant                  | 1        | https://www.mcmaster.com/1832A51/                                     |
 | 91292A027               | M3 Bolts                     | 18       | https://www.mcmaster.com/91292A027/                                   |
@@ -85,8 +102,10 @@ Bolt the end-cap into place onto the side with the stub PCB (the negative-most s
 Test fit the end-cap to make sure it fits flush
 ![image](https://github.com/user-attachments/assets/589d33f1-d7c2-4181-a72a-2bf287fa1e1e)
 
-Heat-set the M4 insert into the wire-side end cap
-![image](https://github.com/user-attachments/assets/7db04cd3-1199-4924-aa9c-dd19e0a73ce5)
+Heat-set the M4 insert into the wire-side end cap and install 2 nuts.
+_Note - having two nuts on this side technically violates the bolt/nut pattern, but trust me, it's way easier to assemble._
+![image](https://github.com/user-attachments/assets/838f58b5-8dae-4d4c-bfc5-6c605501213c)
+
 
 Drill 5 holes into the end cap based on the wire sizes. TODO image which shows all 5 holes
 _Note - the wires must be lined up in order to avoid crosses. There isn't much space in the end_
@@ -111,6 +130,9 @@ Apply a bit of thick tape (I used fiberglass tape) to prevent the thin wires fro
 
 Insert the power wires into the printed housing
 ![image](https://github.com/user-attachments/assets/bb1b3d3f-5da7-4b2e-b256-cf995cdc2658)
+
+Pass the power wires through the holes drilled. Solder the XT30 to the backside
+TODO - include image of XT30 soldered on backside
 
 Pot the back of the housing with DOW 738. Use a toothpick to make sure that the coverage is 100%
 ![image](https://github.com/user-attachments/assets/5c6b1237-7f63-4169-bf57-5ccb5373413d)
@@ -144,18 +166,21 @@ Final test procedure
 
 # Tools
 
-## ST-Link to Julet Adapter
+## ST-Link to Green Julet Adapter Harness
 
-Use this to program the processor
+Use this adapter to program the processor or read parameters with STMStudio
 
 | Part Number             | Description                  | Quantity | Link                                                                  |
 |-------------------------|------------------------------|----------|-----------------------------------------------------------------------|
-| ST-Link                 | PRogrammer                   | 1        | Digikey                |
-| 20P header                 | 20 Pin header adapter                 | 1        | Digikey                |
-| Molex C-grid                | Crimps                 | 1        | Digikey                |
+| ST-Link V2                 | PRogrammer                   | 1        | Digikey                |
+| 0901420020                 | Molex 20 Pin header adapter                 | 1        | Digikey                |
+| 0016020088                | Molex C-Grid Crimps                 | 1        | Digikey                |
 | Julet 5-pin Green connector, Male    | Crimps                 | 1        | Digikey                |
 
-Note that you will need to double crimp the 3.3V wire (TODO insert image)
+Note that you will need to double crimp the 3.3V wire to provide a reference voltage for the STLink like so:
+
+![image](https://github.com/user-attachments/assets/1f5cfe38-e13c-4bf2-830e-5fe9113f55d4)
+
 
 ## Button Harness
 
@@ -172,8 +197,12 @@ PCB Pin 2 - BUTTON ------Green----BUTTON
 PCB Pin 3 - RS485 A -----Black----RS485 A
 PCB Pin 4 - RS485 B -----White----RS485 B
 
+![image](https://github.com/user-attachments/assets/63b6034c-4d9e-4d6d-854b-5a069ed0edf0)
+
 ## Sizer Ring
-I suggest printing a 40mm sizer ring to pass over the battery prior to heat-shrinking
+I suggest printing a 40mm sizer ring to pass over the battery prior to heat-shrinking. This verifies that it will go in the tube smoothly.
+![image](https://github.com/user-attachments/assets/95699e0d-cdbf-4c79-bad2-37c8c50f5484)
+
 
 
 
