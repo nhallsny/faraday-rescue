@@ -39,8 +39,11 @@ I chose a Samsung 35E 18650 for energy density and capability to meet a 10A cont
 
 |Parameter|Limit|
 |---------|-----|
-|Max V| 4.2V|
-|Min V| 2.XV|
+|Safety Under Voltage - Permanent Fail Subsystem| 1900mV|
+|Shutdown Under Voltage| 2400mV|
+|Cell Under Voltage| 2631mV|
+|Cell Over Voltage| 4199mV|
+|Safety Over Voltage - Permanent Fail Subsystem| 4500mV|
 |Max Continuous Discharge Current| 8A |
 |Min Charge Temperature| 5C|
 |Max Charge Temperature| XXC |

@@ -56,7 +56,7 @@ RTC_HandleTypeDef hrtc;
 
 /* Program Options */
 #define DEBUG 0 //Debug mode disables RS485 communications to the bike and instead enables debug messages over RS485, including printf.
-#define LEDS 0 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
+#define LEDS 1 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
 #define WATCHDOG 1 //set to 1 to enable watchdog. Good for production, bad for debugging
 
 /*BQ Parameters */
@@ -639,10 +639,8 @@ void BQ769x2_Configure() {
 	BQ769x2_SetRegister(REG0Config, 0x01, 1); // 'REG0 Config' - set REG0_EN bit to enable pre-regulator
 	BQ769x2_SetRegister(REG12Config, 0x0D, 1); // 'REG12 Config' - Enable REG1 with 3.3V output (0x0D for 3.3V and disable REG2 as not used
 
-	/* MFG status - keep chip in FULLACCESS, but set FETs to autonomous mode */
-	BQ769x2_SetRegister(MfgStatusInit, 0b0000000000010000, 2); //autonomous mode
-
-	//BQ769x2_SetRegister(MfgStatusInit,0b0000000000000000,2); //debug mode, not for production
+	/* MFG status - keep chip in FULLACCESS, but set FETs to autonomous mode and enable permanent fail*/
+	BQ769x2_SetRegister(MfgStatusInit, 0b0000000001010000, 2); //autonomous mode and enable permanent fail
 
 	/* Pin Function Configs */
 	BQ769x2_SetRegister(DFETOFFPinConfig, 0b10000010, 1); // Set DFETOFF pin to control BOTH DSG FET - 0x92FB = 0x42 (set to 0x00 to disable)
@@ -708,14 +706,25 @@ void BQ769x2_Configure() {
 	BQ769x2_SetRegister(OTCThreshold, (signed char) 40, 1); // Set overtemperature in charge threshold. Assume +/- 5C because of poor thermistor coupling
 	BQ769x2_SetRegister(OTDThreshold, (signed char) 55, 1); // Set overtemperature in discharge threshold. Assume +/- 5C because of poor thermistor coupling
 
+	/*Set Permanent Fail for SUV and SOV*/
+	BQ769x2_SetRegister(SUVThreshold,1900,2); //0x92CB - set safety undervoltage threshold to 1.9V
+	BQ769x2_SetRegister(SOVThreshold,4500,2); //0x92CE - set safety overvoltage threshold to 4.5V
+	BQ769x2_SetRegister(EnabledPFA,0b00000011,1); //Enable Permanent Fail for Safety Undervoltage and Safety Overvoltage Only
+	BQ769x2_SetRegister(EnabledPFD,0b00000001,1); //Enable Permanent Fail for Safety Undervoltage and Safety Overvoltage Only
+	BQ769x2_SetRegister(TOSSThreshold,240,2); //enable permanent fail if top of stack voltage deviates from cell voltages added up by 240*12 = 2.8V
+	BQ769x2_SetRegister(ProtectionConfiguration,0x02,2); //Set Permanent Fail to turn FETs off only. Assume that idle will take care of DEEPSLEEP
+	//need to test what happens when we get to permanent fail. In theory the STM32 should go to sleep by itself. Might be best to turn off linear regulators though
+
+	//BQ769x2_SetRegister(CHGFETProtectionsA,0b00001000,1); //Protection subsystem only disables CHG on COV. Should be on by default
+	//BQ769x2_SetRegister(DSGFETProtectionsA,0b00000100,1); //Protection subsystem only disables DSG on CUV. Should be on by default
+
 	/* Balancing Configuration - leaving defaults for deltas (>40mV to start, <20mV to stop*/
 	BQ769x2_SetRegister(BalancingConfiguration, 0b00000011, 1); //Set balancing to autonomously operate while in RELAX and CHARGE configurations. Sleep is disabled.
-	//BQ769x2_SetRegister(BalancingConfiguration, 0b00000000, 1); //Set balancing to autonomously operate while in RELAX and CHARGE configurations. Sleep is disabled.
-	BQ769x2_SetRegister(CellBalanceMaxCells, 3, 1); //0x933A  - set maximum number of cells that may balance at once. Contributes to thermal limit
-	BQ769x2_SetRegister(CellBalanceMinDeltaCharge, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts to 15mV
-	BQ769x2_SetRegister(CellBalanceMinDeltaRelax, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts to 15mV
-	BQ769x2_SetRegister(CellBalanceStopDeltaCharge, 15, 1); //0x933D - set minimum cell balance delta at which balancing starts to 15mV
-	BQ769x2_SetRegister(CellBalanceStopDeltaRelax, 15, 1); //0x933D - set minimum cell balance delta at which balancing starts to 15mV
+	BQ769x2_SetRegister(CellBalanceMaxCells, 3, 1); //0x933A  - set maximum number of cells that may balance at once. Contributes to thermal limit of BQ chip
+	BQ769x2_SetRegister(CellBalanceMinDeltaCharge, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in CHARGE to 15mV
+	BQ769x2_SetRegister(CellBalanceMinDeltaRelax, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in RELAX to 15mV
+	BQ769x2_SetRegister(CellBalanceStopDeltaCharge, 15, 1); //0x933D - set minimum cell balance delta at which balancing stops in CHARGE to 15mV
+	BQ769x2_SetRegister(CellBalanceStopDeltaRelax, 15, 1); //0x933D - set minimum cell balance delta at which balancing stops in RELAX to 15mV
 	BQ769x2_SetRegister(CellBalanceMinCellVCharge, (int16_t) 0x0E74, 2); //0x933B -Minimum voltage at which cells start balancing. Set to 3700mV for now
 	BQ769x2_SetRegister(CellBalanceMinCellVRelax, (int16_t) 0x0E74, 2); //0x933F -Minimum voltage at which cells start balancing. Set to 3700mV for now
 
@@ -1048,8 +1057,9 @@ void BQ769x2_CalcMinMaxCellV() {
 /* debug function to print lots of status bits */
 void BQ769x2_PrintStatus() {
 	AlarmBits = BQ769x2_ReadRawAlarmStatus();
+	BQ769x2_ReadPFStatus(); //TODO remove later
 	printf(
-			"CRC: %d Bal: %d Dsg: %d Chg: %d ScanComplete: %d Prots: %d SSA: %d SSBC: %d UV: %d OV: %d SCD: %d OCD: %d SSA: %#x, SSB: %#x, SSC: %#x",
+			"CRC: %d Bal: %d Dsg: %d Chg: %d ScanComplete: %d Prots: %d SSA: %d SSBC: %d PFA: %d PFB: %d PFC: %d UV: %d OV: %d SCD: %d OCD: %d SSA: %#x, SSB: %#x, SSC: %#x",
 			CRC_Fail,
 			//AlarmBits & 0x00 ? 1 : 0, //WAKE
 			//AlarmBits & 0x02 ? 1 : 0, //ADSCAN
@@ -1062,6 +1072,7 @@ void BQ769x2_PrintStatus() {
 			//AlarmBits & 0x400 ? 1 : 0, //INITSTART
 			ProtectionsTriggered, AlarmBits & 0x4000 ? 1 : 0, //Safety Status A
 			AlarmBits & 0x8000 ? 1 : 0, //Safety Status B or C
+			value_PFStatusA, value_PFStatusB, value_PFStatusC,
 			UV_Fault, OV_Fault, SCD_Fault, OCD_Fault, value_SafetyStatusA,
 			value_SafetyStatusB, value_SafetyStatusC);
 
@@ -1759,6 +1770,8 @@ int main(void) {
 			} else {
 				RetryCount++;
 			}
+
+
 
 			//Check for faults and trigger the LED if so
 			if (BQ769x2_ReadSafetyStatus()) {
