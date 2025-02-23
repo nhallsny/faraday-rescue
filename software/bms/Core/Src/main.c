@@ -706,17 +706,13 @@ void BQ769x2_Configure() {
 	BQ769x2_SetRegister(OTCThreshold, (signed char) 40, 1); // Set overtemperature in charge threshold. Assume +/- 5C because of poor thermistor coupling
 	BQ769x2_SetRegister(OTDThreshold, (signed char) 55, 1); // Set overtemperature in discharge threshold. Assume +/- 5C because of poor thermistor coupling
 
-	/*Set Permanent Fail for SUV and SOV*/
+	/*Set Permanent Fail for SUV and SOV to just disable FETs to prevent charging of severely undervolted cells. STM32 goes to sleep due to inactivity afterwards*/
 	BQ769x2_SetRegister(SUVThreshold,1900,2); //0x92CB - set safety undervoltage threshold to 1.9V
 	BQ769x2_SetRegister(SOVThreshold,4500,2); //0x92CE - set safety overvoltage threshold to 4.5V
 	BQ769x2_SetRegister(EnabledPFA,0b00000011,1); //Enable Permanent Fail for Safety Undervoltage and Safety Overvoltage Only
 	BQ769x2_SetRegister(EnabledPFD,0b00000001,1); //Enable Permanent Fail for Safety Undervoltage and Safety Overvoltage Only
 	BQ769x2_SetRegister(TOSSThreshold,240,2); //enable permanent fail if top of stack voltage deviates from cell voltages added up by 240*12 = 2.8V
 	BQ769x2_SetRegister(ProtectionConfiguration,0x02,2); //Set Permanent Fail to turn FETs off only. Assume that idle will take care of DEEPSLEEP
-	//need to test what happens when we get to permanent fail. In theory the STM32 should go to sleep by itself. Might be best to turn off linear regulators though
-
-	//BQ769x2_SetRegister(CHGFETProtectionsA,0b00001000,1); //Protection subsystem only disables CHG on COV. Should be on by default
-	//BQ769x2_SetRegister(DSGFETProtectionsA,0b00000100,1); //Protection subsystem only disables DSG on CUV. Should be on by default
 
 	/* Balancing Configuration - leaving defaults for deltas (>40mV to start, <20mV to stop*/
 	BQ769x2_SetRegister(BalancingConfiguration, 0b00000011, 1); //Set balancing to autonomously operate while in RELAX and CHARGE configurations. Sleep is disabled.
@@ -1770,8 +1766,6 @@ int main(void) {
 			} else {
 				RetryCount++;
 			}
-
-
 
 			//Check for faults and trigger the LED if so
 			if (BQ769x2_ReadSafetyStatus()) {
