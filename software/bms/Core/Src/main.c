@@ -56,7 +56,7 @@ RTC_HandleTypeDef hrtc;
 
 /* Program Options */
 #define DEBUG 0 //Debug mode disables RS485 communications to the bike and instead enables debug messages over RS485, including printf.
-#define LEDS 1 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
+#define LEDS 0 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
 #define WATCHDOG 1 //set to 1 to enable watchdog. Good for production, bad for debugging
 
 /*BQ Parameters */
@@ -1362,10 +1362,14 @@ uint8_t STM32_Wake_Button_Pressed() {
 /* If current below 250mA for more than XXX loops, activate sleep. Must have a fresh value in Pack_Current */
 void STM32_HandleInactivity() {
 
-//Increment sleep timer if current is between +20mA and -250mA
-	if (Pack_Current >= PACK_CURRENT_INACTIVITY_LOWER_LIMIT_MA
+	//Increment sleep timer if current is between +20mA and -250mA. Increment much faster if we're done with charge to get the correct Faraday LED behavior.
+	if (Chg && Pack_Current >= PACK_CURRENT_INACTIVITY_LOWER_LIMIT_MA
 			&& Pack_Current <= PACK_CURRENT_INACTIVITY_UPPER_LIMIT_MA) {
-		InactivityCount++;
+		if (!Chg && Dsg){
+			InactivityCount+= 300; //if CHG fet is off but DSG is still on, we're finished with charge and should sleep in around a second.
+		} else {
+			InactivityCount++;
+		}
 	} else {
 		InactivityCount = InactivityCount / 2; //exponential decay if current detected
 	}
@@ -1383,7 +1387,6 @@ void STM32_HandleInactivity() {
 		}
 
 	}
-
 }
 
 /* STM32_Stop - puts the STM32 into STOP mode at minimum power consumption.
