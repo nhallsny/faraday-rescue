@@ -58,6 +58,7 @@ RTC_HandleTypeDef hrtc;
 #define DEBUG 0 //Debug mode disables RS485 communications to the bike and instead enables debug messages over RS485, including printf.
 #define LEDS 0 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
 #define WATCHDOG 1 //set to 1 to enable watchdog. Good for production, bad for debugging
+#define RESET_3V3 0 //set to 1 reset 3v3 rail. Useful if STM32 doesn't sleep after debugging with debugger.
 
 /*BQ Parameters */
 #define DEV_ADDR  0x10  // BQ769x2 address is 0x10 including R/W bit or 0x8 as 7-bit address
@@ -1363,7 +1364,7 @@ uint8_t STM32_Wake_Button_Pressed() {
 void STM32_HandleInactivity() {
 
 	//Increment sleep timer if current is between +20mA and -250mA. Increment much faster if we're done with charge to get the correct Faraday LED behavior.
-	if (Chg && Pack_Current >= PACK_CURRENT_INACTIVITY_LOWER_LIMIT_MA
+	if (Pack_Current >= PACK_CURRENT_INACTIVITY_LOWER_LIMIT_MA
 			&& Pack_Current <= PACK_CURRENT_INACTIVITY_UPPER_LIMIT_MA) {
 		if (!Chg && Dsg){
 			InactivityCount+= 300; //if CHG fet is off but DSG is still on, we're finished with charge and should sleep in around a second.
@@ -1521,7 +1522,7 @@ void Sleep() {
 
 /* Update FET LEDs with most recent status */
 void STM32_UpdateFETLEDs() {
-	BQ769x2_ReadFETStatus();
+
 	HAL_GPIO_WritePin(LED_CHG_PORT, LED_CHG_PIN, Chg);
 	HAL_GPIO_WritePin(LED_DSG_PORT, LED_DSG_PIN, Dsg);
 }
@@ -1627,7 +1628,11 @@ int main(void) {
 
 	/* Useful functions for debugging, especially if the STM32 gets into a weird state where it won't sleep */
 	//BlinkForever(1); //uncomment to test IWDG
-	//BQ769x2_Reset(); //Use this for several reasons - the main reason is to kill the 3.3V rail and power cycle the STM32, which may be necessary if the programmer puts it into a state where it won't sleep properly
+	if(RESET_3V3){
+		BQ769x2_Reset(); //Use this for several reasons - the main reason is to kill the 3.3V rail and power cycle the STM32, which may be necessary if the programmer puts it into a state where it won't sleep properly
+	}
+
+
 	UART_WaitForCommand(); //Start UART Receiving
 
 	while (1) {
@@ -1747,6 +1752,7 @@ int main(void) {
 			STM32_HandleButton();
 
 			//Update FET registers and update LEDs
+			BQ769x2_ReadFETStatus();
 			if (LEDS) {
 				STM32_UpdateFETLEDs();
 			}
