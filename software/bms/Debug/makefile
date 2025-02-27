@@ -76,6 +76,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 faraday_stm32_bms.list \
 
+OBJCOPY_HEX += \
+faraday_stm32_bms.hex \
+
+OBJCOPY_BIN += \
+faraday_stm32_bms.bin \
+
 
 # All Target
 all: main-build
@@ -99,12 +105,22 @@ faraday_stm32_bms.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEP
 	@echo 'Finished building: $@'
 	@echo ' '
 
+faraday_stm32_bms.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "faraday_stm32_bms.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+faraday_stm32_bms.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "faraday_stm32_bms.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) default.size.stdout faraday_stm32_bms.elf faraday_stm32_bms.list faraday_stm32_bms.map
+	-$(RM) default.size.stdout faraday_stm32_bms.bin faraday_stm32_bms.elf faraday_stm32_bms.hex faraday_stm32_bms.list faraday_stm32_bms.map
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
