@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000028  00000000  00000000  0000e1d4  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00014f91  00000000  00000000  0000e1fc  2**0
+ 12 .debug_info   00014f8f  00000000  00000000  0000e1fc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000030f4  00000000  00000000  0002318d  2**0
+ 13 .debug_abbrev 000030d9  00000000  00000000  0002318b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00001598  00000000  00000000  00026288  2**3
+ 14 .debug_aranges 00001598  00000000  00000000  00026268  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 000010d2  00000000  00000000  00027820  2**0
+ 15 .debug_rnglists 000010d2  00000000  00000000  00027800  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  000150f6  00000000  00000000  000288f2  2**0
+ 16 .debug_macro  000150fc  00000000  00000000  000288d2  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00019ce4  00000000  00000000  0003d9e8  2**0
+ 17 .debug_line   00019ce6  00000000  00000000  0003d9ce  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0007b2d4  00000000  00000000  000576cc  2**0
+ 18 .debug_str    0007b2e0  00000000  00000000  000576b4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000d29a0  2**0
+ 19 .comment      00000043  00000000  00000000  000d2994  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00005eb8  00000000  00000000  000d29e4  2**2
+ 20 .debug_frame  00005eb8  00000000  00000000  000d29d8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000006b  00000000  00000000  000d889c  2**0
+ 21 .debug_line_str 0000006b  00000000  00000000  000d8890  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -9020,7 +9020,7 @@ void STM32_HandleInactivity() {
  800412c:	20000412 	.word	0x20000412
  8004130:	20000411 	.word	0x20000411
  8004134:	20000418 	.word	0x20000418
- 8004138:	00003a98 	.word	0x00003a98
+ 8004138:	00002af8 	.word	0x00002af8
 
 0800413c <STM32_Stop>:
 
@@ -9506,8 +9506,6 @@ int main(void) {
 	}
 
 	/* Check to see if the STOP flag is set from prior reset. If so, initiate STOP*/
-
-
 	if (STM32_ShouldStop()) {
  8004402:	f7ff ffbd 	bl	8004380 <STM32_ShouldStop>
  8004406:	1e03      	subs	r3, r0, #0
@@ -9527,14 +9525,15 @@ int main(void) {
  8004412:	2032      	movs	r0, #50	@ 0x32
  8004414:	f7fe f988 	bl	8002728 <delayMS>
 
+	/* Init watchdog */
 	if (WATCHDOG) {
 		MX_IWDG_Init();
  8004418:	f000 fa86 	bl	8004928 <MX_IWDG_Init>
+	/* Useful functions for debugging, especially if the STM32 gets into a weird state where it won't sleep */
+	if(RESET_3V3){
+		BQ769x2_Reset(); //Use this for several reasons - the main reason is to kill the 3.3V rail and power cycle the STM32, which may be necessary if the programmer puts it into a state where it won't sleep properly
 	}
 
-	/* Useful functions for debugging, especially if the STM32 gets into a weird state where it won't sleep */
-	//BlinkForever(1); //uncomment to test IWDG
-	//BQ769x2_Reset(); //Use this for several reasons - the main reason is to kill the 3.3V rail and power cycle the STM32, which may be necessary if the programmer puts it into a state where it won't sleep properly
 	UART_WaitForCommand(); //Start UART Receiving
  800441c:	f7ff fba6 	bl	8003b6c <UART_WaitForCommand>
 

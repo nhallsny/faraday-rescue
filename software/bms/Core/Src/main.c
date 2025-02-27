@@ -119,7 +119,7 @@ RTC_HandleTypeDef hrtc;
 
 /* User-Facing Timing Parameters */
 #define RETRY_LIMIT 100 //number of times the STM will retry communications with BQ before calling for a hard reset
-#define INACTIVITY_LOOPS_MAX 15000 //number of loops without significant battery current before bike goes into sleep. Normally around 5 minutes for 10,000 loops
+#define INACTIVITY_LOOPS_MAX 11000 //number of loops without significant battery current before bike goes into sleep. Normally around 5 minutes for 10,000 loops
 #define BUTTON_LONG_PRESS_LOOPS 15 //number of loops that count as a long press
 #define UART_TIMEOUT_S 3 //default timeout for RS485 in seconds
 #define PACK_CURRENT_INACTIVITY_LOWER_LIMIT_MA -250
@@ -1608,8 +1608,6 @@ int main(void) {
 	}
 
 	/* Check to see if the STOP flag is set from prior reset. If so, initiate STOP*/
-
-
 	if (STM32_ShouldStop()) {
 		if (DEBUG){
 			printf("stm32 reset with intent to sleep, time to sleep...zzz\r\n");
@@ -1622,16 +1620,16 @@ int main(void) {
 
 	delayMS(50); //Wait for everything to stabilize
 
+	/* Init watchdog */
 	if (WATCHDOG) {
 		MX_IWDG_Init();
 	}
+	//BlinkForever(1); //uncomment to test IWDG
 
 	/* Useful functions for debugging, especially if the STM32 gets into a weird state where it won't sleep */
-	//BlinkForever(1); //uncomment to test IWDG
 	if(RESET_3V3){
 		BQ769x2_Reset(); //Use this for several reasons - the main reason is to kill the 3.3V rail and power cycle the STM32, which may be necessary if the programmer puts it into a state where it won't sleep properly
 	}
-
 
 	UART_WaitForCommand(); //Start UART Receiving
 
