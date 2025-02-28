@@ -76,6 +76,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 faraday_stm32_bms.list \
 
+OBJCOPY_HEX += \
+faraday_stm32_bms.hex \
+
 
 # All Target
 all: main-build
@@ -85,7 +88,7 @@ main-build: faraday_stm32_bms.elf secondary-outputs
 
 # Tool invocations
 faraday_stm32_bms.elf faraday_stm32_bms.map: $(OBJS) $(USER_OBJS) C:\Users\natha\Documents\GitHub\faraday-rescue\software\bms\STM32L010K8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "faraday_stm32_bms.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\natha\Documents\GitHub\faraday-rescue\software\bms\STM32L010K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="faraday_stm32_bms.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "faraday_stm32_bms.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\natha\Documents\GitHub\faraday-rescue\software\bms\STM32L010K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="faraday_stm32_bms.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -99,12 +102,17 @@ faraday_stm32_bms.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEP
 	@echo 'Finished building: $@'
 	@echo ' '
 
+faraday_stm32_bms.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "faraday_stm32_bms.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) default.size.stdout faraday_stm32_bms.elf faraday_stm32_bms.list faraday_stm32_bms.map
+	-$(RM) default.size.stdout faraday_stm32_bms.elf faraday_stm32_bms.hex faraday_stm32_bms.list faraday_stm32_bms.map
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

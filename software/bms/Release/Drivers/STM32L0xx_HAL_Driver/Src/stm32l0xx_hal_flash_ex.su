@@ -1,0 +1,16 @@
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:1036:26:FLASH_OB_ProtectedSectorsConfig	16	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:322:19:HAL_FLASHEx_OBProgram	32	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:405:6:HAL_FLASHEx_OBGetConfig	0	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:438:19:HAL_FLASHEx_AdvOBProgram	8	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:481:6:HAL_FLASHEx_AdvOBGetConfig	0	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:521:19:HAL_FLASHEx_OB_SelectPCROP	8	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:563:19:HAL_FLASHEx_OB_DeSelectPCROP	8	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:629:19:HAL_FLASHEx_DATAEEPROM_Unlock	0	static,ignoring_inline_asm
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:659:19:HAL_FLASHEx_DATAEEPROM_Lock	0	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:677:19:HAL_FLASHEx_DATAEEPROM_Erase	8	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:719:21:HAL_FLASHEx_DATAEEPROM_Program	24	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:775:6:HAL_FLASHEx_DATAEEPROM_EnableFixedTimeProgram	0	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:784:6:HAL_FLASHEx_DATAEEPROM_DisableFixedTimeProgram	0	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:1236:6:FLASH_PageErase	8	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:166:19:HAL_FLASHEx_Erase	32	static
+../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c:230:19:HAL_FLASHEx_Erase_IT	32	static
