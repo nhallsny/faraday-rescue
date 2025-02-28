@@ -39,13 +39,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_line   00019ce6  00000000  00000000  0003d9ce  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0007b2e0  00000000  00000000  000576b4  2**0
+ 18 .debug_str    0007b29f  00000000  00000000  000576b4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000d2994  2**0
+ 19 .comment      00000043  00000000  00000000  000d2953  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00005eb8  00000000  00000000  000d29d8  2**2
+ 20 .debug_frame  00005eb8  00000000  00000000  000d2998  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000006b  00000000  00000000  000d8890  2**0
+ 21 .debug_line_str 0000006a  00000000  00000000  000d8850  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -11821,7 +11821,7 @@ void EXTI0_1_IRQHandler(void)
 {
  8004fe8:	b580      	push	{r7, lr}
  8004fea:	af00      	add	r7, sp, #0
-                  	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
  8004fec:	2001      	movs	r0, #1
  8004fee:	f000 ff7f 	bl	8005ef0 <HAL_GPIO_EXTI_IRQHandler>
 	//EXTI->PR = EXTI_PR_PIF0;
@@ -13224,11 +13224,6 @@ HAL_StatusTypeDef HAL_ADC_ConfigChannel(ADC_HandleTypeDef *hadc, ADC_ChannelConf
  80056a8:	ffbfffff 	.word	0xffbfffff
 
 080056ac <__NVIC_EnableIRQ>:
-  \details Enables a device specific interrupt in the NVIC interrupt controller.
-  \param [in]      IRQn  Device specific interrupt number.
-  \note    IRQn must not be negative.
- */
-__STATIC_INLINE void __NVIC_EnableIRQ(IRQn_Type IRQn)
 {
  80056ac:	b580      	push	{r7, lr}
  80056ae:	b082      	sub	sp, #8
@@ -13241,7 +13236,6 @@ __STATIC_INLINE void __NVIC_EnableIRQ(IRQn_Type IRQn)
  80056ba:	781b      	ldrb	r3, [r3, #0]
  80056bc:	2b7f      	cmp	r3, #127	@ 0x7f
  80056be:	d809      	bhi.n	80056d4 <__NVIC_EnableIRQ+0x28>
-  {
     NVIC->ISER[0U] = (uint32_t)(1UL << (((uint32_t)IRQn) & 0x1FUL));
  80056c0:	1dfb      	adds	r3, r7, #7
  80056c2:	781b      	ldrb	r3, [r3, #0]
@@ -13253,7 +13247,6 @@ __STATIC_INLINE void __NVIC_EnableIRQ(IRQn_Type IRQn)
  80056ce:	4091      	lsls	r1, r2
  80056d0:	000a      	movs	r2, r1
  80056d2:	601a      	str	r2, [r3, #0]
-  }
 }
  80056d4:	46c0      	nop			@ (mov r8, r8)
  80056d6:	46bd      	mov	sp, r7
@@ -13262,11 +13255,6 @@ __STATIC_INLINE void __NVIC_EnableIRQ(IRQn_Type IRQn)
  80056dc:	e000e100 	.word	0xe000e100
 
 080056e0 <__NVIC_DisableIRQ>:
-  \details Disables a device specific interrupt in the NVIC interrupt controller.
-  \param [in]      IRQn  Device specific interrupt number.
-  \note    IRQn must not be negative.
- */
-__STATIC_INLINE void __NVIC_DisableIRQ(IRQn_Type IRQn)
 {
  80056e0:	b580      	push	{r7, lr}
  80056e2:	b082      	sub	sp, #8
@@ -13279,7 +13267,6 @@ __STATIC_INLINE void __NVIC_DisableIRQ(IRQn_Type IRQn)
  80056ee:	781b      	ldrb	r3, [r3, #0]
  80056f0:	2b7f      	cmp	r3, #127	@ 0x7f
  80056f2:	d810      	bhi.n	8005716 <__NVIC_DisableIRQ+0x36>
-  {
     NVIC->ICER[0U] = (uint32_t)(1UL << (((uint32_t)IRQn) & 0x1FUL));
  80056f4:	1dfb      	adds	r3, r7, #7
  80056f6:	781b      	ldrb	r3, [r3, #0]
@@ -13292,11 +13279,6 @@ __STATIC_INLINE void __NVIC_DisableIRQ(IRQn_Type IRQn)
  8005704:	0013      	movs	r3, r2
  8005706:	2280      	movs	r2, #128	@ 0x80
  8005708:	508b      	str	r3, [r1, r2]
-  \details Acts as a special kind of Data Memory Barrier.
-           It completes when all explicit memory accesses before this instruction complete.
- */
-__STATIC_FORCEINLINE void __DSB(void)
-{
   __ASM volatile ("dsb 0xF":::"memory");
  800570a:	f3bf 8f4f 	dsb	sy
 }
@@ -13305,9 +13287,6 @@ __STATIC_FORCEINLINE void __DSB(void)
  8005710:	f3bf 8f6f 	isb	sy
 }
  8005714:	46c0      	nop			@ (mov r8, r8)
-    __DSB();
-    __ISB();
-  }
 }
  8005716:	46c0      	nop			@ (mov r8, r8)
  8005718:	46bd      	mov	sp, r7
@@ -13317,11 +13296,6 @@ __STATIC_FORCEINLINE void __DSB(void)
  8005720:	e000e100 	.word	0xe000e100
 
 08005724 <__NVIC_SetPriority>:
-  \param [in]      IRQn  Interrupt number.
-  \param [in]  priority  Priority to set.
-  \note    The priority cannot be set for every processor exception.
- */
-__STATIC_INLINE void __NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
 {
  8005724:	b590      	push	{r4, r7, lr}
  8005726:	b083      	sub	sp, #12
@@ -13335,7 +13309,6 @@ __STATIC_INLINE void __NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
  8005734:	781b      	ldrb	r3, [r3, #0]
  8005736:	2b7f      	cmp	r3, #127	@ 0x7f
  8005738:	d828      	bhi.n	800578c <__NVIC_SetPriority+0x68>
-  {
     NVIC->IP[_IP_IDX(IRQn)]  = ((uint32_t)(NVIC->IP[_IP_IDX(IRQn)]  & ~(0xFFUL << _BIT_SHIFT(IRQn))) |
  800573a:	4a2f      	ldr	r2, [pc, #188]	@ (80057f8 <__NVIC_SetPriority+0xd4>)
  800573c:	1dfb      	adds	r3, r7, #7
@@ -13379,11 +13352,6 @@ __STATIC_INLINE void __NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
  8005784:	33c0      	adds	r3, #192	@ 0xc0
  8005786:	009b      	lsls	r3, r3, #2
  8005788:	501a      	str	r2, [r3, r0]
-  else
-  {
-    SCB->SHP[_SHP_IDX(IRQn)] = ((uint32_t)(SCB->SHP[_SHP_IDX(IRQn)] & ~(0xFFUL << _BIT_SHIFT(IRQn))) |
-       (((priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t)0xFFUL) << _BIT_SHIFT(IRQn)));
-  }
 }
  800578a:	e031      	b.n	80057f0 <__NVIC_SetPriority+0xcc>
     SCB->SHP[_SHP_IDX(IRQn)] = ((uint32_t)(SCB->SHP[_SHP_IDX(IRQn)] & ~(0xFFUL << _BIT_SHIFT(IRQn))) |
