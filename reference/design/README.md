@@ -103,6 +103,8 @@ At the maximum power draw (30mA), the linear regulator efficincy is laughable (1
 
 _Note - the linear regulator is quite sensitive to leakage currents from skin. Touching the caps may interrupt the supply to the BQ chip, resetting the STM32._
 
+![image](https://github.com/user-attachments/assets/7b6064c6-f551-47b4-8c7a-20abf8c9d3a8)
+
 ## Charge pump
 
 The charge pump takes in battery voltage and boosts it up 10V to provide a high-side drive for the back to back NFETs. This circuit is almost entirely based on the BS76972 reference schematic.
@@ -162,6 +164,8 @@ The board has three connectors:
 - 5 pin Molex Picoblade for the programming connector
 
 ![image](https://github.com/user-attachments/assets/ed6b9a84-1539-4170-9a6f-1923d0bb7ae0)
+
+
 
 
 
