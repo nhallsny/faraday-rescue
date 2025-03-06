@@ -39,25 +39,33 @@ Detailed updates or build instructions are better suited for the subfolders such
 
 ## Repository
 
-```
-.
-|--- build
-|--- referece
-|--- software
-| LICENSE
-| README.md
 
-```
+[build](https://github.com/nhallsny/faraday-rescue/tree/main/build) - CAD/Gerbers
 
-The purpose of each subfolder is explained below:
-+ build: Contains all the (binary) design files needed to make the battery and PCB.
-+ reference: contains material from the original company as well as teardown photos from reverse engineering the original boards
-+ software: contains firmware for the STM32 on the BMS as well as engineering tools used
+- [cad](https://github.com/nhallsny/faraday-rescue/tree/main/build/cad) - files for printing, lasering, etc
+	
+- [pcb](https://github.com/nhallsny/faraday-rescue/tree/main/build/pcb) - Gerbers and Kicad project
+	
+- [build guide](https://github.com/nhallsny/faraday-rescue/tree/main/build/README.md) - Build Instructions
+ 
+[reference](https://github.com/nhallsny/faraday-rescue/tree/main/reference) - design docs, build instructions, original documentation
+
+- [design reference](https://github.com/nhallsny/faraday-rescue/tree/main/reference/design/README.md) - Design Doc
+	
+- [official](https://github.com/nhallsny/faraday-rescue/tree/main/reference/official) - Original docs from Faraday
+	
+- [rebuild](https://github.com/nhallsny/faraday-rescue/tree/main/reference/rebuild) - Instructions to only replace cells
+ 
+[software](https://github.com/nhallsny/faraday-rescue/tree/main/software) - Code
+
+LICENSE
+
+README.md
 
 ## Build instructions
-Build instructions -->
-BOM link -->
-Test instructions -->
+Build instructions & BOM -->[here](https://github.com/nhallsny/faraday-rescue/tree/main/build/README.md)
+JLCPCB BOM --> [here](https://github.com/nhallsny/faraday-rescue/blob/main/build/pcb/faraday-rescue-bms/jlcpcb/production_files/BOM-pcb_battery.csv)
+Test instructions --> TODO
 
 ## Goals
 
