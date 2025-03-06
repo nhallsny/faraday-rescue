@@ -2,4 +2,10 @@
 *.lck
 
 #ignore all autosave files
-_autosave*
+*_autosave*
+
+#ignore backups
+build\pcb\faraday-rescue-bms/
+
+#ignore more autosave stuff
+#auto_saved_files#*
