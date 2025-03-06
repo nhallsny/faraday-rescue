@@ -45,15 +45,17 @@ I chose a Samsung 35E 18650 for energy density and capability to meet a 10A cont
 |Cell Over Voltage| 4199mV|
 |Safety Over Voltage - Permanent Fail Subsystem| 4500mV|
 |Max Continuous Discharge Current| 8A |
-|Min Charge Temperature| 5C|
-|Max Charge Temperature| XXC |
-|Min Discharge Temperature| XX C|
-|Max Discharge Temperature| XX C|
+|Min Charge Temperature| 0C|
+|Max Charge Temperature| 45C |
+|Min Discharge Temperature| -10 C|
+|Max Discharge Temperature| 60 C|
 
-## Battery IC Selection
+I generally added 5C of margin to these in the conservative direction to account for temperature sense inaccuracy.
+
+## Battery ProtectionIC Selection
 
 I chose a BQ76972 for this project for these reasons:
-- 16 cells
+- 16 cell capability
 - Integrated linear regulator
 - Integrated balancing
 - Integrated temperature measurement
@@ -80,6 +82,8 @@ This was a real challenge. There are surprisingly few RS485 drivers that meet th
 - 3.3V I/O inputs
 - Available on JLCPCB
 
+The original Faraday uses a 3.3V RS485 bus so a 3.3V part, while a little non-standard, works fine.
+
 ## Power supplies
 
 # Linear regulator
@@ -102,6 +106,8 @@ _Note - the linear regulator is quite sensitive to leakage currents from skin. T
 ## Charge pump
 
 The charge pump takes in battery voltage and boosts it up 10V to provide a high-side drive for the back to back NFETs. This circuit is almost entirely based on the BS76972 reference schematic.
+![image](https://github.com/user-attachments/assets/173632f5-c881-432f-92b4-557b23c57e32)
+
 
 ## Sleep/Wake
 
@@ -118,6 +124,10 @@ The corrolary of wake is sleep. The STM32, after a few minutes of inactivity or 
 The RS485 chip is put into sleep mode by setting RE high and DE low.
 
 ![image](https://github.com/user-attachments/assets/34afd942-469b-46e9-9bf7-b9f8c9d57aac)
+
+A snipped from the schematic
+![image](https://github.com/user-attachments/assets/c22b3f03-f256-4376-980d-3c7a71f61ab1)
+
 
 ## Fusing
 
