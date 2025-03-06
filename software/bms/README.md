@@ -2,7 +2,7 @@
 
 Contains the firmware for the battery management system as a STM32CubeIDE project using the HAL.
 
-The majority of the software reference material is located in the design doc](https://github.com/nhallsny/faraday-rescue/blob/main/reference/design/README.md)
+The majority of the software reference material is located in the [design doc](https://github.com/nhallsny/faraday-rescue/blob/main/reference/design/README.md)
 
 ## Binaries
 
