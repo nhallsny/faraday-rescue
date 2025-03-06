@@ -1,0 +1,5 @@
+# ignore all kicad lock files
+*.lck
+
+#ignore all autosave files
+_autosave*
