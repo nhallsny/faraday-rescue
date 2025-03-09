@@ -3,6 +3,27 @@ Open source battery for e-bikes made by the now-defunct Faraday Bicycles
 
 This respository contains designs for an e-bike battery which replaces the original battery in Faraday e-bikes (utilizing exactly nothing from the original battery design!). This design fixes the major flaw in the original design, a high quiescent current which would quickly brick batteries if left un-tended.
 
+## Repository
+
+[build](https://github.com/nhallsny/faraday-rescue/tree/main/build) - CAD/Gerbers
+
+- [cad](https://github.com/nhallsny/faraday-rescue/tree/main/build/cad) - files for printing, lasering, etc
+	
+- [pcb](https://github.com/nhallsny/faraday-rescue/tree/main/build/pcb) - Gerbers and Kicad project
+	
+- [build guide](https://github.com/nhallsny/faraday-rescue/tree/main/build/README.md) - Build Instructions
+ 
+[reference](https://github.com/nhallsny/faraday-rescue/tree/main/reference) - design docs, build instructions, original documentation
+
+- [design reference](https://github.com/nhallsny/faraday-rescue/tree/main/reference/design/README.md) - Design Doc
+	
+- [official](https://github.com/nhallsny/faraday-rescue/tree/main/reference/official) - Original docs and software tools from Faraday
+	
+- [rebuild](https://github.com/nhallsny/faraday-rescue/tree/main/reference/rebuild) - Instructions to only replace cells
+ 
+[software](https://github.com/nhallsny/faraday-rescue/tree/main/software) - Code
+- [bms software](https://github.com/nhallsny/faraday-rescue/tree/main/main/software/bms) - microcontroller code
+
 My revived Faraday:
 ![image](https://github.com/user-attachments/assets/ec35f67b-ac72-4ab8-adf7-9287b601475b)
 
@@ -38,25 +59,6 @@ _Detailed hardware build files are in the [build]([url](https://github.com/nhall
 
 _Software, debug tools, etc are in the [software](https://github.com/nhallsny/faraday-rescue/tree/main/softwareac) folder_
 
-## Repository
-
-[build](https://github.com/nhallsny/faraday-rescue/tree/main/build) - CAD/Gerbers
-
-- [cad](https://github.com/nhallsny/faraday-rescue/tree/main/build/cad) - files for printing, lasering, etc
-	
-- [pcb](https://github.com/nhallsny/faraday-rescue/tree/main/build/pcb) - Gerbers and Kicad project
-	
-- [build guide](https://github.com/nhallsny/faraday-rescue/tree/main/build/README.md) - Build Instructions
- 
-[reference](https://github.com/nhallsny/faraday-rescue/tree/main/reference) - design docs, build instructions, original documentation
-
-- [design reference](https://github.com/nhallsny/faraday-rescue/tree/main/reference/design/README.md) - Design Doc
-	
-- [official](https://github.com/nhallsny/faraday-rescue/tree/main/reference/official) - Original docs from Faraday
-	
-- [rebuild](https://github.com/nhallsny/faraday-rescue/tree/main/reference/rebuild) - Instructions to only replace cells
- 
-[software](https://github.com/nhallsny/faraday-rescue/tree/main/software) - Code
 
 LICENSE
 
