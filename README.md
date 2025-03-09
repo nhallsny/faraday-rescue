@@ -3,10 +3,13 @@ Open source battery for e-bikes made by the now-defunct Faraday Bicycles
 
 This respository contains designs for an e-bike battery which replaces the original battery in Faraday e-bikes (utilizing exactly nothing from the original battery design!). This design fixes the major flaw in the original design, a high quiescent current which would quickly brick batteries if left un-tended.
 
-_Under construction, check back soon!_
+My revived Faraday:
+![image](https://github.com/user-attachments/assets/ec35f67b-ac72-4ab8-adf7-9287b601475b)
 
 ## Overview
 ![overview](https://github.com/user-attachments/assets/03d99ff3-242b-4089-a17a-9e69a970b3f1)
+![image](https://github.com/user-attachments/assets/2e6382bb-4fa4-41c9-86b4-41948129d556)
+
 
 Like the original design, this battery is a 12S 2P 18650 based design. It utilize a PCB the length of the battery for both 'high current' (10A) bussing and for the major BMS controls. Given that the original batteries were designed in 2013, batteries made with modern (2025 as of writing this) have roughly 20% more energy, boosting the range of the bike. However, that's not why this project exists...the project exists because of the many sad Faraday bikes and their unhappy owners. 
 
