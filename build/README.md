@@ -37,7 +37,9 @@ This is a build guide for assembling a faraday rescue battery.
 |Molex / 0510210400       |CONN RCPT HSG 4POS 1.25MM     |1         | Digikey |
 |TE 929990-1              | CONTACT SOCKET 13-17AWG CRIMP|2         | Digikey |
 | 42mmx0.9mm thickness Ti | Tube, 568mm long             | 1        | https://www.ebay.com/itm/174293717819  |
-| a18051400ux0423     | Thin Heatshrink PVC, 70mm flat|            | 1        | Amazon                                                                   |
+| a18051400ux0423     | Thin Heatshrink PVC, 70mm flat|            | 1        | Amazon   |
+| Pre-wired Julet Connector 200mm | 4 pin (blue) Julet connector, male | 1 | Amazon |
+| Pre-wired Julet Connector 200mm | 5 pin (green) Julet connector female | 1 | Amazon |
 | 1289N171                | End-cap o-ring               | 2        | https://www.mcmaster.com/1289N171/                                    |
 | O-ring lube     | O-ring Lubricant, Silicone   | 1        | Local hardware store                                                  |
 | 97163A152               | Insert, M4, 5mm long         | 2        | https://www.mcmaster.com/97163A152/                                   |

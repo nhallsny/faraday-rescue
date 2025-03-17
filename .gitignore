@@ -1,0 +1,19 @@
+# ignore all kicad lock files
+*.lck
+
+#ignore all autosave files
+*_autosave*
+
+#ignore backups
+build\pcb\faraday-rescue-bms/
+
+#ignore more autosave stuff
+#auto_saved_files#*
+
+#ignore windows stuff
+*.ini
+
+#ignore kicad caches
+fp-info-cache
+fp-lib-table
+sym-lib-table
