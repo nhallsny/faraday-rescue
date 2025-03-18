@@ -18,9 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "BQ769x2.h"
 #include "stdio.h"
 #include "utils.h"
+#include "BQ769x2.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -56,9 +56,9 @@ IWDG_HandleTypeDef hiwdg;
 RTC_HandleTypeDef hrtc;
 
 /* Program Options */
-#define DEBUG 0 //Debug mode disables RS485 communications to the bike and instead enables debug messages over RS485, including printf.
-#define LEDS 0 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
-#define WATCHDOG 1 //set to 1 to enable watchdog. Good for production, bad for debugging
+#define DEBUG 1 //Debug mode disables RS485 communications to the bike and instead enables debug messages over RS485, including printf.
+#define LEDS 1 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
+#define WATCHDOG 0 //set to 1 to enable watchdog. Good for production, bad for debugging
 #define RESET_3V3 0 //set to 1 reset 3v3 rail. Useful if STM32 doesn't sleep after debugging with debugger.
 
 /*Pin Definitions
@@ -86,8 +86,8 @@ RTC_HandleTypeDef hrtc;
 #define BUTTON_PIN GPIO_PIN_0
 
 //RST_SHUT_CTRL used by STM to change BQ sleep states
-#define RST_SHUT_CTRL_PORT GPIOA
-#define RST_SHUT_CTRL_PIN GPIO_PIN_1
+#define RST_SHUT_PORT GPIOA
+#define RST_SHUT_PIN GPIO_PIN_1
 
 //REG18 analog value from BQ chip. Read to check if BQ is in SHUTDOWN
 #define REG18_AIN_PORT GPIOA
@@ -113,6 +113,11 @@ RTC_HandleTypeDef hrtc;
 #define UART_RX_EN_PORT GPIOA
 #define UART_RX_EN_PIN GPIO_PIN_7
 
+/*BQ Chip Parameters*/
+#define ACTIVE_CELLS 0xAAFF //bitfield which indicates which cells to have protections on. Specific to this Faraday 12S pack
+#define BQ_DEV_ADDR  0x10 //i2c address
+#define BQ_CRC_MODE 1  // 0 for disabled, 1 for enabled
+
 /* User-Facing Timing Parameters */
 #define RETRY_LIMIT 100 //number of times the STM will retry communications with BQ before calling for a hard reset
 #define INACTIVITY_LOOPS_MAX 11000 //number of loops without significant battery current before bike goes into sleep. Normally around 5 minutes for 10,000 loops
@@ -121,28 +126,24 @@ RTC_HandleTypeDef hrtc;
 #define PACK_CURRENT_INACTIVITY_LOWER_LIMIT_MA -250
 #define PACK_CURRENT_INACTIVITY_UPPER_LIMIT_MA 75
 
-
-
 /*Uart Variables flag*/
 __IO ITStatus UartBusy = RESET;
 
 /* USER CODE BEGIN PV */
 
-uint32_t AccumulatedCharge_Int; // in BQ769x2_READPASSQ func
-uint32_t AccumulatedCharge_Frac; // in BQ769x2_READPASSQ func
-uint32_t AccumulatedCharge_Time; // in BQ769x2_READPASSQ func
-
 //Used for state machine
-struct STM32State{
-	uint8_t ButtonCount = 0;
-	uint16_t CRC_Fail = 0;
-	uint16_t InactivityCount = 0;
-	uint16_t RetryCount = 0;
-	uint8_t ResetByWatchdog = 0;
-	uint8_t ButtonPressedDuringBoot = 0;
-}
+typedef struct {
+	uint8_t ButtonCount;
+	uint16_t CRC_Fail;
+	uint16_t InactivityCount;
+	uint16_t RetryCount;
+	uint8_t ResetByWatchdog;
+	uint8_t ButtonPressedDuringBoot;
+} STM32State;
 
-//Used by UART
+//Global Variables
+STM32State state;
+BQState batt;
 uint8_t UART_RxData[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 uint8_t UART_TxData[32] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -151,7 +152,7 @@ uint8_t UART_TxData[32] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
+static void SystemClock_Config(void);
 static void SystemPower_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC_Init(void);
@@ -170,7 +171,6 @@ static uint8_t UART_PrepCellBalancingMessage();
 static uint8_t UART_PrepBatteryStatusMessage1();
 static uint8_t UART_PrepBatteryStatusMessage2();
 uint8_t STM32_Wake_Button_Pressed();
-uint16_t BQ769x2_ReadControlStatus();
 void Sleep();
 
 #ifdef __GNUC__
@@ -191,35 +191,37 @@ void Sleep();
 
 /* Helper Functions -----------------------------------------------*/
 /* debug function to print lots of status bits */
-void BQ769x2_PrintStatus(BQState* s) {
-	s->AlarmBits = BQ769x2_ReadRawAlarmStatus();
-	BQ769x2_ReadPFStatus(); //TODO remove later
+void BQ769x2_PrintStatus(BQState *s) {
+	s->AlarmBits = BQ769x2_ReadRawAlarmStatus(&batt);
+	BQ769x2_ReadPFStatus(&batt); //TODO remove later
+	BQ769x2_CalcMinMaxCellV(&batt);
 	printf(
 			"CRC: %d Bal: %d Dsg: %d Chg: %d ScanComplete: %d Prots: %d SSA: %d SSBC: %d PFA: %d PFB: %d PFC: %d UV: %d OV: %d SCD: %d OCD: %d SSA: %#x, SSB: %#x, SSC: %#x",
-			CRC_Fail,
-			//AlarmBits & 0x00 ? 1 : 0, //WAKE
-			//AlarmBits & 0x02 ? 1 : 0, //ADSCAN
-			AlarmBits & 0x04 ? 1 : 0, //CB
-			//AlarmBits & 0x10 ? 1 : 0, //SHUTV
-			AlarmBits & 0x20 ? 0 : 1, //XDSG
-			AlarmBits & 0x40 ? 0 : 1, //XCHG
-			AlarmBits & 0x80 ? 1 : 0, //FULLSCAN
-			//AlarmBits & 0x200 ? 1 : 0, //INITCOMP
-			//AlarmBits & 0x400 ? 1 : 0, //INITSTART
-			ProtectionsTriggered, AlarmBits & 0x4000 ? 1 : 0, //Safety Status A
-			AlarmBits & 0x8000 ? 1 : 0, //Safety Status B or C
-			value_PFStatusA, value_PFStatusB, value_PFStatusC,
-			UV_Fault, OV_Fault, SCD_Fault, OCD_Fault, value_SafetyStatusA,
-			value_SafetyStatusB, value_SafetyStatusC);
+			batt.CRC_Fail,
+			//batt.AlarmBits & 0x00 ? 1 : 0, //WAKE
+			//batt.AlarmBits & 0x02 ? 1 : 0, //ADSCAN
+			batt.AlarmBits & 0x04 ? 1 : 0, //CB
+			//batt.AlarmBits & 0x10 ? 1 : 0, //SHUTV
+			batt.AlarmBits & 0x20 ? 0 : 1, //XDSG
+			batt.AlarmBits & 0x40 ? 0 : 1, //XCHG
+			batt.AlarmBits & 0x80 ? 1 : 0, //FULLSCAN
+			//batt.AlarmBits & 0x200 ? 1 : 0, //INITCOMP
+			//batt.AlarmBits & 0x400 ? 1 : 0, //INITSTART
+			batt.ProtectionsTriggered, batt.AlarmBits & 0x4000 ? 1 : 0, //Safety Status A
+			batt.AlarmBits & 0x8000 ? 1 : 0, //Safety Status B or C
+			batt.value_PFStatusA, batt.value_PFStatusB, batt.value_PFStatusC,
+			batt.UV_Fault, batt.OV_Fault, batt.SCD_Fault, batt.OCD_Fault,
+			batt.value_SafetyStatusA, batt.value_SafetyStatusB,
+			batt.value_SafetyStatusC);
 
-	BQ769x2_CalcMinMaxCellV();
 	printf(
 			"PackV: %d StackV:%d LdV:%d I: %d MIN_V: %d MAX_V: %d InactivityCount: %d TS1: %.3f TS3: %.3f T_HDQ: %.3f T_INT: %.3f \r\n",
-			Pack_Voltage,Stack_Voltage,LD_Voltage,Pack_Current, CellMinV, CellMaxV, InactivityCount, Temperature[0],
-			Temperature[1], Temperature[2], Temperature[3]);
+			batt.Pack_Voltage, batt.Stack_Voltage, batt.LD_Voltage,
+			batt.Pack_Current, batt.CellMinV, batt.CellMaxV,
+			state.InactivityCount, batt.Temperature[0], batt.Temperature[1],
+			batt.Temperature[2], batt.Temperature[3]);
 
 }
-
 
 /* UART Functions
  * ===================== */
@@ -294,9 +296,9 @@ uint8_t UART_PrepCellVoltageMessage() {
 	// loop through voltage field and construct uints
 	int k = 0;
 	for (int i = 0; i < 16; i++) {
-		if (ACTIVE_CELLS & (1 << i)) {
-			UART_TxData[2 * k + 3] = (CellVoltage[i] * 2 / 3) >> 8;
-			UART_TxData[2 * k + 4] = (CellVoltage[i] * 2 / 3) & 0xFF;
+		if (batt.ActiveCells & (1 << i)) {
+			UART_TxData[2 * k + 3] = (batt.CellVoltage[i] * 2 / 3) >> 8;
+			UART_TxData[2 * k + 4] = (batt.CellVoltage[i] * 2 / 3) & 0xFF;
 
 			//UART_TxData[2 * k + 3] = (3100 * 2 / 3) >> 8;
 			//UART_TxData[2 * k + 4] = (3100 * 2 / 3) & 0xFF;
@@ -328,10 +330,10 @@ uint8_t UART_PrepCellBalancingMessage() {
 	uint16_t CB = 0x00;
 	int k = 0;
 	for (int i = 0; i < 16; i++) {
-		if (ACTIVE_CELLS & (1 << i)) {
+		if (batt.ActiveCells & (1 << i)) {
 			//i is the cell number active cell bitfield (0xAAFF)
 			//k is the cell number in faraday index
-			if (CB_ActiveCells & (1 << i)) {
+			if (batt.CB_ActiveCells & (1 << i)) { //0x0083 is CB_ACTIVE_CELLS from BQ769x2Header
 				CB = CB | (1 << k); //TODO determine whether the cell number is mapped correctly
 			};
 			k++;
@@ -420,11 +422,11 @@ void UART_Respond(uint8_t *buf, uint16_t size) {
 
 		//Check CRC and that we're the target audience (BMS is 0x02)
 		if (CRCRecv == UART_CRC(buf, 6) && SlaveID == 0x02) {
-			delayUS(450); //insert 1ms delay to match timing of original battery
+			delayUS(&htim2, 450); //insert 1ms delay to match timing of original battery
 			if (FunctionCode == 0x03) { //it's a read
 				if (LEDS) {
 					HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_SET);
-					delayUS(50);
+					delayUS(&htim2, 50);
 					HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_RESET);
 				}
 
@@ -434,25 +436,25 @@ void UART_Respond(uint8_t *buf, uint16_t size) {
 					len = UART_PrepCellVoltageMessage();
 					THVD2410_Transmit();
 					HAL_UART_Transmit(&huart2, UART_TxData, len,
-							UART_TIMEOUT_S);
+					UART_TIMEOUT_S);
 
 				} else if (Address == 0x17) { //Battery Balancing Message
 					len = UART_PrepCellBalancingMessage();
 					THVD2410_Transmit();
 					HAL_UART_Transmit(&huart2, UART_TxData, len,
-							UART_TIMEOUT_S);
+					UART_TIMEOUT_S);
 
 				} else if (Address == 0x00 && NumRegs == 0x01) { //Battery Status Message 1
 					len = UART_PrepBatteryStatusMessage1();
 					THVD2410_Transmit();
 					HAL_UART_Transmit(&huart2, UART_TxData, len,
-							UART_TIMEOUT_S);
+					UART_TIMEOUT_S);
 
 				} else if (Address == 0x01 && NumRegs == 0x01) { //Battery Status Message 1
 					len = UART_PrepBatteryStatusMessage2();
 					THVD2410_Transmit();
 					HAL_UART_Transmit(&huart2, UART_TxData, len,
-							UART_TIMEOUT_S);
+					UART_TIMEOUT_S);
 				}
 			}
 		}
@@ -475,21 +477,20 @@ void STM32_PetWatchdog() {
 	}
 }
 
-
 /* Implement button press timing*/
 void STM32_HandleButton() {
 	if (STM32_Wake_Button_Pressed()) {
-		ButtonCount++;
+		state.ButtonCount++;
 
-	} else if (ButtonCount) {
-		ButtonCount -= 1;
+	} else if (state.ButtonCount) {
+		state.ButtonCount -= 1;
 	};
 
-	if (ButtonCount > BUTTON_LONG_PRESS_LOOPS) {
+	if (state.ButtonCount > BUTTON_LONG_PRESS_LOOPS) {
 		if (DEBUG) {
 			printf("\r\nbutton long press...time to get ready for bed\r\n");
 		}
-		ButtonCount = 0;
+		state.ButtonCount = 0;
 		Sleep();
 	};
 }
@@ -502,25 +503,25 @@ uint8_t STM32_Wake_Button_Pressed() {
 void STM32_HandleInactivity() {
 
 	//Increment sleep timer if current is between +20mA and -250mA. Increment much faster if we're done with charge to get the correct Faraday LED behavior.
-	if (Pack_Current >= PACK_CURRENT_INACTIVITY_LOWER_LIMIT_MA
-			&& Pack_Current <= PACK_CURRENT_INACTIVITY_UPPER_LIMIT_MA) {
-		if (!Chg && Dsg){
-			InactivityCount+= 300; //if CHG fet is off but DSG is still on, we're finished with charge and should sleep in around a second.
+	if (batt.Pack_Current >= PACK_CURRENT_INACTIVITY_LOWER_LIMIT_MA
+			&& batt.Pack_Current <= PACK_CURRENT_INACTIVITY_UPPER_LIMIT_MA) {
+		if (!batt.Chg && batt.Dsg) {
+			state.InactivityCount += 300; //if CHG fet is off but DSG is still on, we're finished with charge and should sleep in around a second.
 		} else {
-			InactivityCount++;
+			state.InactivityCount++;
 		}
 	} else {
-		InactivityCount = InactivityCount / 2; //exponential decay if current detected
+		state.InactivityCount = state.InactivityCount / 2; //exponential decay if current detected
 	}
 
 	if (!DEBUG) {
-		if (InactivityCount > INACTIVITY_LOOPS_MAX) {
+		if (state.InactivityCount > INACTIVITY_LOOPS_MAX) {
 			Sleep();
 		}
 
 		//loop is much slower with prinfs enabled, so make this more reasonable
 	} else {
-		if (InactivityCount > 500) {
+		if (state.InactivityCount > 500) {
 			printf("\r\ninactivity timeout...time to get ready for bed\r\n");
 			Sleep();
 		}
@@ -536,7 +537,7 @@ void STM32_Stop() {
 	//blink to show that we're entering sleep
 	if (LEDS) {
 		HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_SET);
-		delayMS(100);
+		delayMS(&htim2, 100);
 		HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_RESET);
 	}
 
@@ -547,7 +548,7 @@ void STM32_Stop() {
 	HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_RESET);
 
 	//Turn off FETs
-	BQ769x2_ForceDisableFETs();
+	BQ769x2_ForceDisableFETs(&batt);
 
 	//Turn off RS485 Chip
 	THVD2410_Sleep();
@@ -564,7 +565,6 @@ void STM32_Stop() {
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 	__HAL_RCC_GPIOH_CLK_ENABLE();
-
 
 	//Configure all GPIO port pins in Analog Input mode (floating input trigger OFF)
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -607,7 +607,7 @@ void STM32_Stop() {
 
 void STM32_CheckForWatchdogReset() {
 	if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) != RESET) {
-		ResetByWatchdog = 1;
+		state.ResetByWatchdog = 1;
 	}
 
 	/* Clear reset flags in any cases */
@@ -628,21 +628,21 @@ void Sleep() {
 	CLEAR_BIT(huart2.Instance->CR1, USART_CR1_RXNEIE);
 
 	//turn off both fets
-	BQ769x2_ForceDisableFETs();
-	//BQ769x2_CommandSubcommand(ALL_FETS_OFF);
+	BQ769x2_ForceDisableFETs(&batt);
 
 	//wait 200ms for the bus voltage to decay
-	delayMS(200);
+	delayMS(&htim2, 200);
 
 	//Put the BQ to sleep
-	while (!BQ769x2_EnterDeepSleep()) {
-		delayUS(5000);
+	while (!BQ769x2_EnterDeepSleep(&batt)) {
+		delayUS(&htim2, 5000);
 	}
 
-	BQ769x2_DirectCommand(AlarmStatus, 0x0080, W); // Clear the FULLSCAN bit, otherwise STM32 will wake up immediately
+	BQ769x2_ClearFullScan(&batt);
 
 	if (DEBUG) {
-		printf("\r\nbq put into DEEP SLEEP, STM about to reset to disable watchdog...\r\n");
+		printf(
+				"\r\nbq put into DEEP SLEEP, STM about to reset to disable watchdog...\r\n");
 	}
 
 	//set persistent flag that we will want to STOP immediately upon reset
@@ -654,15 +654,14 @@ void Sleep() {
 	NVIC_SystemReset();
 }
 
-
 /* LED Helper Functions
  * ===================== */
 
 /* Update FET LEDs with most recent status */
 void STM32_UpdateFETLEDs() {
 
-	HAL_GPIO_WritePin(LED_CHG_PORT, LED_CHG_PIN, Chg);
-	HAL_GPIO_WritePin(LED_DSG_PORT, LED_DSG_PIN, Dsg);
+	HAL_GPIO_WritePin(LED_CHG_PORT, LED_CHG_PIN, batt.Chg);
+	HAL_GPIO_WritePin(LED_DSG_PORT, LED_DSG_PIN, batt.Dsg);
 }
 
 /**
@@ -671,9 +670,9 @@ void STM32_UpdateFETLEDs() {
  */
 void STM32_BlinkForever(uint16_t period_ms) {
 	HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_SET);
-	delayMS(period_ms);
+	delayMS(&htim2, period_ms);
 	HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_RESET);
-	delayMS(period_ms);
+	delayMS(&htim2, period_ms);
 }
 
 /* Check to see if the magic value was written into the persistent RTC registers on the last reboot. Return 1 if true, 0 if not. */
@@ -687,8 +686,6 @@ uint8_t STM32_ShouldStop() {
 
 	return 0;
 }
-
-
 
 /* USER CODE END PFP */
 
@@ -723,10 +720,6 @@ int main(void) {
 	SystemClock_Config();
 
 	/* USER CODE BEGIN SysInit */
-
-	/* USER CODE END SysInit */
-
-	/* Initialize all the things */
 	MX_GPIO_Init();
 	MX_ADC_Init();
 	MX_I2C1_Init();
@@ -735,32 +728,32 @@ int main(void) {
 	SystemPower_Config();
 	MX_RTC_Init();
 	HAL_TIM_Base_Start(&htim2);
+	/* USER CODE END SysInit */
 
 	if (DEBUG) {
-			printf("stm32 init complete\r\n");
+		printf("stm32 init complete\r\n");
 	}
 
 	/*Check to see if the button is currently pressed*/
 	if (STM32_Wake_Button_Pressed()) {
-		ButtonPressedDuringBoot= 1;
+		state.ButtonPressedDuringBoot = 1;
 	}
 
 	/* Check to see if the STOP flag is set from prior reset. If so, initiate STOP*/
 	if (STM32_ShouldStop()) {
-		if (DEBUG){
+		if (DEBUG) {
 			printf("stm32 reset with intent to sleep, time to sleep...zzz\r\n");
 		}
 		STM32_Stop();
 	}
 
+	/* Initialize BQ State*/
+	BQ769x2_InitState(&batt, &hi2c1, BQ_DEV_ADDR, BQ_CRC_MODE, &htim2,
+	ACTIVE_CELLS, RST_SHUT_PORT, RST_SHUT_PIN, CFETOFF_PORT, CFETOFF_PIN,
+	DFETOFF_PORT, DFETOFF_PIN);
 
-	// initialize state struct on stack
-	BQState bq = {}; //initialize
-	BQ769x2_InitState(&bq);
-
-	BQ769x2_ResetShutdownPin(); // RST_SHUT pin set low just in case
-
-	delayMS(50); //Wait for everything to stabilize
+	BQ769x2_ResetShutdownPin(&batt); // RST_SHUT pin set low just in case
+	delayMS(&htim2, 50); //Wait for everything to stabilize
 
 	/* Init watchdog */
 	if (WATCHDOG) {
@@ -769,9 +762,9 @@ int main(void) {
 	//BlinkForever(1); //uncomment to test IWDG
 
 	/* Useful functions for debugging, especially if the STM32 gets into a weird state where it won't sleep */
-	if(RESET_3V3){
+	if (RESET_3V3) {
 		HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_SET);
-		BQ769x2_Reset(); //Use this for several reasons - the main reason is to kill the 3.3V rail and power cycle the STM32, which may be necessary if the programmer puts it into a state where it won't sleep properly
+		BQ769x2_Reset(&batt); //Use this for several reasons - the main reason is to kill the 3.3V rail and power cycle the STM32, which may be necessary if the programmer puts it into a state where it won't sleep properly
 	}
 
 	UART_WaitForCommand(); //Start UART Receiving
@@ -779,116 +772,96 @@ int main(void) {
 	while (1) {
 
 		/* USER CODE BEGIN 3 */
-		BQ769x2_ForceDisableFETs(); //disable FETs until we are getting communication from the BQ chip
-
-		BQ769x2_SoftWake(); //wiggle RST_SHUT to do a partial reset of the BQ chip. Not sure if this is necessary but it doesn't seem to hurt.
+		BQ769x2_ForceDisableFETs(&batt); //disable FETs until we are getting communication from the BQ chip
+		BQ769x2_SoftWake(&batt); //wiggle RST_SHUT to do a partial reset of the BQ chip. Not sure if this is necessary but it doesn't seem to hurt.
 
 		if (DEBUG) {
-			if (BQ769x2_ReadControlStatus() & 0x04){
+			if (BQ769x2_ReadControlStatus(&batt) & 0x04) {
 				printf("bq woke from DEEPSLEEP\r\n");
 			}
 		}
 
-		/* old code
-		// Check to see if BQ is in DEEPSLEEP or not
-		if (BQ769x2_ReadControlStatus() & 0x04){//if bit 2 is high, then device is in DEEPSLEEP
-			if (DEBUG) {
-				printf("BQ was asleep\r\n");
-			}
-
-			delayUS(1000);
-			if (RetryCount > RETRY_LIMIT) {
-				BQ769x2_Reset(); //gotta reset the BQ and try again. This kills the 3V3 rail
-			}
-			RetryCount++;
-		}
-
-		RetryCount = 0;
-
-		*/
-
 		//Check for BQ state FULLACCESS, SEALED, or UNSEALED. Device must be connected and ACKing to get past this point.
 		// This may take quite a few reads for the chip to wake up if it's the first time it's booting (I've seen 15 reads!)
-		while (!BQ769x2_Ready()) {
+		while (!BQ769x2_Ready(&batt)) {
 			if (DEBUG) {
 				printf("bq not ready\r\n");
 			}
-			delayUS(1000);
-			if (RetryCount > RETRY_LIMIT) {
+			delayUS(&htim2, 1000);
+			if (state.RetryCount > RETRY_LIMIT) {
 				HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_SET);
-				BQ769x2_Reset(); //gotta reset the BQ and try again. This kills the 3V3 rail
+				BQ769x2_Reset(&batt); //gotta reset the BQ and try again. This kills the 3V3 rail
 			}
-			RetryCount++;
+			state.RetryCount++;
 		};
 
-		RetryCount = 0;
+		state.RetryCount = 0;
 
 		//Wake up the device if it isn't already awake
-		while (!BQ769x2_Wake()) {
-			if (DEBUG){
+		while (!BQ769x2_Wake(&batt)) {
+			if (DEBUG) {
 				printf("bq not awake\r\n");
 			}
-			delayUS(1000);
-			if (RetryCount > RETRY_LIMIT) {
+			delayUS(&htim2, 1000);
+			if (state.RetryCount > RETRY_LIMIT) {
 				HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_SET);
-				BQ769x2_Reset(); //gotta reset the BQ and try again. This kills the 3V3 rail
+				BQ769x2_Reset(&batt); //gotta reset the BQ and try again. This kills the 3V3 rail
 			}
-			RetryCount++;
+			state.RetryCount++;
 		}
 
-		RetryCount = 0;
+		state.RetryCount = 0;
 
 		//Initialize registers by calling BQ769x2_Init and then checking that the configuration was successful
 		// BQ769x2 does a spot check of a register that should have been configured if BQ769x2_Init() was successful.
-		while (!BQ769x2_Initialize()) {
+		while (!BQ769x2_Initialize(&batt)) {
 			if (DEBUG) {
 				printf("bq not configured\r\n");
 			}
-			if (RetryCount > RETRY_LIMIT) {
+			if (state.RetryCount > RETRY_LIMIT) {
 				HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_SET);
-				BQ769x2_Reset(); //gotta reset the BQ and try again. This kills the 3V3 rail
+				BQ769x2_Reset(&batt); //gotta reset the BQ and try again. This kills the 3V3 rail
 			}
-			RetryCount++;
+			state.RetryCount++;
 		}
 
-		RetryCount = 0;
+		state.RetryCount = 0;
 
 		// get first ADC reading. Normal for this to take a few retries
-		while (!BQ769x2_ReadBatteryData()) {
-			if (RetryCount > RETRY_LIMIT) {
+		while (!BQ769x2_ReadBatteryData(&batt)) {
+			if (state.RetryCount > RETRY_LIMIT) {
 				HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_SET);
-				BQ769x2_Reset(); //gotta reset the BQ and try again. This kills the 3V3 rail
+				BQ769x2_Reset(&batt); //gotta reset the BQ and try again. This kills the 3V3 rail
 			}
-			RetryCount++;
-			delayUS(5000); //wait a bit for the ADC to finish measuring
+			state.RetryCount++;
+			delayUS(&htim2, 5000); //wait a bit for the ADC to finish measuring
 		}
 
-		RetryCount = 0;
+		state.RetryCount = 0;
 
 		// check whether a charger >15V is connected and the button wasn't pressed during boot. If not, go back to sleep.
-		if (!ButtonPressedDuringBoot && Pack_Voltage < 15000) {
-			if (DEBUG){
-				printf("stm32 going back to sleep because user didn't press button and charger isn't connected...zzz\r\n");
+		if (!state.ButtonPressedDuringBoot && batt.Pack_Voltage < 15000) {
+			if (DEBUG) {
+				printf(
+						"stm32 going back to sleep because user didn't press button and charger isn't connected...zzz\r\n");
 			}
 			Sleep();
 		}
 
 		//why are we starting? the only reasons are button press or charger detected
-		if (DEBUG){
-			if (ButtonPressedDuringBoot){
+		if (DEBUG) {
+			if (state.ButtonPressedDuringBoot) {
 				printf("\r\nbutton pressed, time to attempt to allow FETs\r\n");
 			}
-			if (Pack_Voltage > 15000){
+			if (batt.Pack_Voltage > 15000) {
 				printf("\r\ncharger connected, time to allow FETs\r\n");
 			}
 		}
 
-		//enable FETs. It appears to be important to call FET_ENABLE twice
-		BQ769x2_CommandSubcommand(FET_ENABLE); // Enable the CHG and DSG FETs
-		BQ769x2_AllowFETs();
-		BQ769x2_CommandSubcommand(FET_ENABLE); //for some reason need to do this twice...TODO investigate
+		//Enable FETs because the BQ chip is up and running
+		BQ769x2_AllowFETs(&batt);
 
-		//Call outside loop
+		//Start UART interrupt
 		UART_WaitForCommand();
 
 		while (1) {
@@ -897,7 +870,7 @@ int main(void) {
 			STM32_HandleButton();
 
 			//Update FET registers and update LEDs
-			BQ769x2_ReadFETStatus();
+			BQ769x2_ReadFETStatus(&batt);
 			if (LEDS) {
 				STM32_UpdateFETLEDs();
 			}
@@ -906,39 +879,39 @@ int main(void) {
 			STM32_HandleInactivity();
 
 			//Useful for logging
-			BQ769x2_CalcMinMaxCellV();
+			BQ769x2_CalcMinMaxCellV(&batt);
 
 			//Print battery status over RS485 for debug
-			BQ769x2_ReadBatteryStatus();
+			BQ769x2_ReadBatteryStatus(&batt);
 			if (DEBUG) {
-				BQ769x2_PrintStatus();
+				BQ769x2_PrintStatus(&batt);
 			}
 
 			//Get the latest data from the BQ chip
-			if (BQ769x2_ReadBatteryData()) {
-				RetryCount = 0;
+			if (BQ769x2_ReadBatteryData(&batt)) {
+				state.RetryCount = 0;
 			} else {
-				RetryCount++;
+				state.RetryCount++;
 			}
 
 			//Check for faults and trigger the LED if so
-			if (BQ769x2_ReadSafetyStatus()) {
-				RetryCount = 0;
+			if (BQ769x2_ReadSafetyStatus(&batt)) {
+				state.RetryCount = 0;
 			} else {
-				RetryCount++;
+				state.RetryCount++;
 			};
 
 			//Set Fault LED
-			if (LEDS && (ProtectionsTriggered & 1)) {
+			if (LEDS && (batt.ProtectionsTriggered & 1)) {
 				HAL_GPIO_WritePin(LED_BF_PORT, LED_BF_PIN, GPIO_PIN_SET);
 			} else {
 				HAL_GPIO_WritePin(LED_BF_PORT, LED_BF_PIN, GPIO_PIN_RESET);
 			}
 
 			//If there are too many failures, reset the BQ chip
-			if (RetryCount > RETRY_LIMIT) {
+			if (state.RetryCount > RETRY_LIMIT) {
 				HAL_GPIO_WritePin(LED_SF_PORT, LED_SF_PIN, GPIO_PIN_SET);
-				if (!BQ769x2_Reset()){
+				if (!BQ769x2_Reset(&batt)) {
 					Error_Handler(); //If we end up here, something is truly messed up
 					//gotta reset the BQ and try again. This kills the 3V3 rail
 				}
@@ -946,7 +919,7 @@ int main(void) {
 			}
 
 			STM32_PetWatchdog();
-			delayMS(10);  // repeat loop every 20 ms
+			delayMS(&htim2, 10);  // repeat loop every 20 ms
 
 		}
 	}
@@ -957,14 +930,14 @@ PUTCHAR_PROTOTYPE {
 	/* Place your implementation of fputc here */
 	/* e.g. write a character to the EVAL_COM1 and Loop until the end of transmission */
 	HAL_GPIO_WritePin(UART_RX_EN_PORT, UART_RX_EN_PIN, GPIO_PIN_SET); // Receive Off
-	delayUS(20);
+	delayUS(&htim2, 20);
 	HAL_GPIO_WritePin(UART_TX_EN_PORT, UART_TX_EN_PIN, GPIO_PIN_SET); // Transmit On
-	delayUS(20);
+	delayUS(&htim2, 20);
 	HAL_UART_Transmit(&huart2, (uint8_t*) &ch, 1, 0xFFFF);
 	HAL_GPIO_WritePin(UART_TX_EN_PORT, UART_TX_EN_PIN, GPIO_PIN_RESET); //Transmit off
-	delayUS(20);
+	delayUS(&htim2, 20);
 	HAL_GPIO_WritePin(UART_RX_EN_PORT, UART_RX_EN_PIN, GPIO_PIN_SET); // Receive still off
-	delayUS(20);
+	delayUS(&htim2, 20);
 
 	return ch;
 }
@@ -1171,7 +1144,7 @@ static void MX_I2C1_Init(void) {
  * @retval None
  */
 static void SystemPower_Config(void) {
-//GPIO_InitTypeDef GPIO_InitStructure;
+	//GPIO_InitTypeDef GPIO_InitStructure;
 
 	/* Enable Ultra low power mode */
 	HAL_PWREx_EnableUltraLowPower();
@@ -1446,7 +1419,7 @@ void Error_Handler(void) {
 	}
 
 	//reset and hope things go better the next time around
-	delayMS(1000); //wait a second
+	delayMS(&htim2, 1000); //wait a second
 	while (1)
 		; //let the watchdog reset us
 
@@ -1455,17 +1428,17 @@ void Error_Handler(void) {
 
 #ifdef  USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
+	/* USER CODE BEGIN 6 */
+	/* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
+	/* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

@@ -1,12 +1,19 @@
+#ifndef BQ769x2_H_
+#define BQ769x2_H_
+
 #include "BQ769x2Header.h"
 
 typedef struct {
-	void* bq_i2c;
-	uint8_t RST_SHUT_PORT;
+	uint16_t ActiveCells;
+	I2C_HandleTypeDef *i2c_hdl;
+	uint8_t i2c_adr;
+	uint8_t i2c_crc; //1 for CRC enabled, 0 for disabled
+	TIM_HandleTypeDef *tim_hdl;
+	GPIO_TypeDef * RST_SHUT_PORT;
 	uint8_t RST_SHUT_PIN;
-	uint8_t CFETOFF_PORT;
+	GPIO_TypeDef * CFETOFF_PORT;
 	uint8_t CFETOFF_PIN;
-	uint8_t DFETOFF_PORT;
+	GPIO_TypeDef * DFETOFF_PORT;
 	uint8_t DFETOFF_PIN;
 	int16_t CellVoltage[16];
 	int16_t CellMinV;
@@ -40,8 +47,75 @@ typedef struct {
 	uint16_t AccumulatedCharge_Int;
 	uint16_t AccumulatedCharge_Frac;
 	uint16_t AccumulatedCharge_Time;
+	uint16_t CRC_Fail;
 } BQState;
 
-extern BQState bq;
+void BQ769x2_Set_Confirm_Register(BQState *s, uint16_t reg_addr,
+		uint32_t reg_data, uint8_t datalen);
+
+// Function Prototypes
+void BQ769x2_InitState(BQState *s, void *i2c_hdl, uint8_t i2c_adr,uint8_t crc_mode,void *tim_hdl,
+		uint16_t ACTIVE_CELLS, GPIO_TypeDef * RST_SHUT_PORT, uint8_t RST_SHUT_PIN, GPIO_TypeDef * CFETOFF_PORT,
+		uint8_t CFETOFF_PIN, GPIO_TypeDef * DFETOFF_PORT, uint8_t DFETOFF_PIN);
+
+unsigned char Checksum(unsigned char *ptr, unsigned char len);
+unsigned char CRC8(unsigned char *ptr, unsigned char len);
+
+void I2C_WriteReg(BQState *s, uint8_t reg_addr, uint8_t *reg_data,
+		uint8_t count);
+int I2C_BQ769x2_ReadReg(BQState *s, uint8_t reg_addr, uint8_t *reg_data,
+		uint8_t count);
+
+void BQ769x2_SetRegister(BQState *s, uint16_t reg_addr, uint32_t reg_data,
+		uint8_t datalen);
+void BQ769x2_CommandSubcommand(BQState *s, uint16_t command);
+void BQ769x2_ReadReg(BQState *s, uint16_t command, uint16_t data, uint8_t type);
+void BQ769x2_Subcommand(BQState *s, uint16_t command, uint16_t data,
+		uint8_t type);
+void BQ769x2_DirectCommand(BQState *s, uint8_t command, uint16_t data,
+		uint8_t type);
+
+uint16_t BQ769x2_ReadUnsignedRegister(BQState *s, uint16_t reg_addr,
+		uint8_t count);
+int16_t BQ769x2_ReadSignedRegister(BQState *s, uint16_t reg_addr,
+		uint8_t count);
+float BQ769x2_ReadFloatRegister(BQState *s, uint16_t reg_addr);
+void BQ769x2_Set_Confirm_Register(BQState *s, uint16_t reg_addr,
+		uint32_t reg_data, uint8_t datalen);
+
+void BQ769x2_ReadBatteryStatus(BQState *s);
+uint8_t BQ769x2_ReadBatteryData(BQState *s);
+uint16_t BQ769x2_ReadDeviceNumber(BQState *s);
+void BQ769x2_Configure(BQState *s);
+uint8_t BQ769x2_Initialize(BQState *s);
+
+void BQ769x2_ForceDisableFETs(BQState *s);
+void BQ769x2_AllowFETs(BQState *s);
+void BQ769x2_ReadFETStatus(BQState *s);
+
+void BQ769x2_SetShutdownPin(BQState *s);
+void BQ769x2_ResetShutdownPin(BQState *s);
+uint8_t BQ769x2_EnterDeepSleep(BQState *s);
+uint8_t BQ769x2_Wake(BQState *s);
+void BQ769x2_EnterShutDown(BQState *s);
+uint8_t BQ769x2_Reset(BQState *s);
+uint8_t BQ769x2_Ready(BQState *s);
+void BQ769x2_SoftWake(BQState *s);
+void BQ769x2_ClearFullScan(BQState *s);
+
+uint16_t BQ769x2_ReadAlarmStatus(BQState *s);
+uint16_t BQ769x2_ReadControlStatus(BQState *s);
+uint16_t BQ769x2_ReadRawAlarmStatus(BQState *s);
+uint8_t BQ769x2_ReadSafetyStatus(BQState *s);
+void BQ769x2_ReadPFStatus(BQState *s);
+uint16_t BQ769x2_ReadVoltage(BQState *s, uint8_t command);
+void BQ769x2_ReadAllVoltages(BQState *s);
+int16_t BQ769x2_ReadCurrent(BQState *s);
+float BQ769x2_ReadTemperature(BQState *s, uint8_t command);
 
 
+
+void BQ769x2_ReadBalancingStatus(BQState *s);
+void BQ769x2_CalcMinMaxCellV(BQState *s);
+
+#endif
