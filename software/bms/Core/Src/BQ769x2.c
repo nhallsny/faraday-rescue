@@ -5,7 +5,7 @@
 #include "BQ769x2.h"
 
 /*BQ Parameterss */
-// BQ769x2 address is 0x10 including R/W bit or 0x8 as 7-bit address
+// BQ769x2 address is by default 0x10 including R/W bit or 0x8 as 7-bit address. Set this in the call to BQ_
 
 #define MAX_BUFFER_SIZE 32
 
@@ -14,7 +14,7 @@
 #define W 1 // Write; Used in BQ769x2_DirectCommand and Subcommands functions
 #define W2 2 // Write data with two bytes; Used in Subcommands function
 
-// Global Variables for buffers
+/*Globals*/
 uint8_t RX_data[MAX_BUFFER_SIZE] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -40,8 +40,8 @@ void BQ769x2_InitState(BQState *s, void *i2c_hdl, uint8_t i2c_adr, uint8_t crc_m
 	s->DFETOFF_PIN = DFETOFF_PIN;
 }
 
+/*Calculates the checksum when writing to a RAM register. The checksum is the inverse of the sum of the bytes.*/
 unsigned char Checksum(unsigned char *ptr, unsigned char len)
-// Calculates the checksum when writing to a RAM register. The checksum is the inverse of the sum of the bytes.
 {
 	unsigned char i;
 	unsigned char checksum = 0;
@@ -54,8 +54,8 @@ unsigned char Checksum(unsigned char *ptr, unsigned char len)
 	return (checksum);
 }
 
+/*Calculates CRC8 for passed bytes. Used in i2c read and write functions*/
 unsigned char CRC8(unsigned char *ptr, unsigned char len)
-//Calculates CRC8 for passed bytes. Used in i2c read and write functions
 {
 	unsigned char i;
 	unsigned char crc = 0;
@@ -111,7 +111,7 @@ void I2C_WriteReg(BQState *s, uint8_t reg_addr, uint8_t *reg_data,
 
 }
 
-/* hacked version that doesn't segfault */
+/* Read Register, version which doesn't segfault */
 int I2C_BQ769x2_ReadReg(BQState *s, uint8_t reg_addr, uint8_t *reg_data,
 		uint8_t count) {
 	unsigned int RX_CRC_Fail = 0; // reset to 0. If in CRC Mode and CRC fails, this will be incremented.
@@ -161,7 +161,7 @@ int I2C_BQ769x2_ReadReg(BQState *s, uint8_t reg_addr, uint8_t *reg_data,
 	return 0;
 }
 
-/* BQ Functions -----------------------------------------------*/
+/* Set Register -----------------------------------------------*/
 void BQ769x2_SetRegister(BQState *s, uint16_t reg_addr, uint32_t reg_data,
 		uint8_t datalen) {
 	uint8_t TX_Buffer[2] = { 0x00, 0x00 };
@@ -205,6 +205,7 @@ void BQ769x2_SetRegister(BQState *s, uint16_t reg_addr, uint32_t reg_data,
 	delayMS(s->tim_hdl, 2);
 }
 
+/* send command-only subommands (no response expected), see the TRM or the BQ76952 header file for a full list of Direct Commands */
 void BQ769x2_CommandSubcommand(BQState *s, uint16_t command) //For Command only Subcommands
 // See the TRM or the BQ76952 header file for a full list of Command-only subcommands
 { //For DEEPSLEEP/SHUTDOWN subcommand you will need to call this function twice consecutively
@@ -219,6 +220,7 @@ void BQ769x2_CommandSubcommand(BQState *s, uint16_t command) //For Command only 
 	delayMS(s->tim_hdl, 2);
 }
 
+/*read register, seems to segfault above 16 bytes. TODO fix the segfault*/
 void BQ769x2_ReadReg(BQState *s, uint16_t command, uint16_t data, uint8_t type) {
 	//security keys and Manu_data writes dont work with this function (reading these commands works)
 	//max readback size is 32 bytes i.e. DASTATUS, CUV/COV snapshot. Seems to segfault above 16 bytes
@@ -229,13 +231,17 @@ void BQ769x2_ReadReg(BQState *s, uint16_t command, uint16_t data, uint8_t type) 
 	TX_Reg[1] = (command >> 8) & 0xff;
 
 	if (type == R) {	//read
-		I2C_WriteReg(s, 0x3E, TX_Reg, 2);
+		//I2C_WriteReg(s, 0x3E, TX_Reg, 2); //TODO verify that this works
+		I2C_BQ769x2_WriteReg(s,0x3E,TX_Reg,2);
 		delayUS(s->tim_hdl, 2000);
 		I2C_BQ769x2_ReadReg(s, 0x40, RX_32Byte, 16); //RX_32Byte is a global variable, but CRC fails if I read more than 16 bytes
 	}
 }
 
-//read data from Subcommands. Max readback size is 16 bytes because of a bug that would cause CRC errors with readbacks longer than 16.
+/* send subcommand, see the TRM or the BQ76952 header file for a full list of Direct Commands
+ * Max readback size is 16 bytes because of a bug that would cause CRC errors with readbacks longer than 16.
+ * TODO fix the CRC segfault bug
+ */
 void BQ769x2_Subcommand(BQState *s, uint16_t command, uint16_t data,
 		uint8_t type)
 // See the TRM or the BQ76952 header file for a full list of Subcommands
@@ -275,9 +281,10 @@ void BQ769x2_Subcommand(BQState *s, uint16_t command, uint16_t data,
 	delayMS(s->tim_hdl, 2);
 }
 
+/* send direct command, see the TRM or the BQ76952 header file for a full list of Direct Commands */
 void BQ769x2_DirectCommand(BQState *s, uint8_t command, uint16_t data,
 		uint8_t type)
-// See the TRM or the BQ76952 header file for a full list of Direct Commands
+
 {	//type: R = read, W = write
 	uint8_t TX_data[2] = { 0x00, 0x00 };
 
@@ -295,7 +302,7 @@ void BQ769x2_DirectCommand(BQState *s, uint8_t command, uint16_t data,
 		delayUS(s->tim_hdl, 2000);
 	}
 }
-
+/* read an unsigned integer of 1 or 2 byte length */
 uint16_t BQ769x2_ReadUnsignedRegister(BQState *s, uint16_t reg_addr,
 		uint8_t count) {
 	// Read Unsigned Register of 1 or 2 byte length
@@ -309,8 +316,8 @@ uint16_t BQ769x2_ReadUnsignedRegister(BQState *s, uint16_t reg_addr,
 	return 0;
 }
 
+/* read a signed integer of 1 or 2 byte length */
 int16_t BQ769x2_ReadSignedRegister(BQState *s, uint16_t reg_addr, uint8_t count) {
-	// Read signed Register of 1 or 2 byte length
 	BQ769x2_Subcommand(s, reg_addr, 0x00, R);
 	switch (count) {
 	case 1:
@@ -322,8 +329,8 @@ int16_t BQ769x2_ReadSignedRegister(BQState *s, uint16_t reg_addr, uint8_t count)
 	return 0;
 }
 
+/* read a 4 byte float, such as CC_Gain and Capacity Gain */
 float BQ769x2_ReadFloatRegister(BQState *s, uint16_t reg_addr) {
-	// Read a 4 byte float (CC_Gain and Capacity Gain Only)
 	BQ769x2_ReadReg(s, reg_addr, 0x00, R);
 
 	const unsigned char *b = (const unsigned char*) RX_32Byte;
@@ -334,6 +341,7 @@ float BQ769x2_ReadFloatRegister(BQState *s, uint16_t reg_addr) {
 	//Example Fault Flags
 }
 
+/* untested function which sets and then reads back register. There is a simpler way to do this listed in the datasheet */
 void BQ769x2_Set_Confirm_Register(BQState *s, uint16_t reg_addr,
 		uint32_t reg_data, uint8_t datalen) {
 	//set and then verify that a register has been set
@@ -349,19 +357,7 @@ void BQ769x2_Set_Confirm_Register(BQState *s, uint16_t reg_addr,
 	}
 }
 
-void BQ769x2_ReadBatteryStatus(BQState *s) {
-	// Read Battery Status with DirectCommand
-	// This shows which primary protections have been triggered
-	BQ769x2_DirectCommand(s, BatteryStatus, 0x00, R);
-	s->value_BatteryStatus = (RX_data[1] * 256 + RX_data[0]);
-}
-
-uint16_t BQ769x2_ReadDeviceNumber(BQState *s) {
-	// Read Device Number with SubCommand
-	BQ769x2_Subcommand(s, DEVICE_NUMBER, 0x00, R);
-	return (RX_32Byte[1] * 256 + RX_32Byte[0]);
-}
-
+/* function which configures the BQ from defaults, must be called prior to enabling FETs */
 void BQ769x2_Configure(BQState *s) {
 	// Configures all parameters in device RAM
 
@@ -543,24 +539,26 @@ uint8_t BQ769x2_Initialize(BQState *s) {
 
 //  ********************************* FET Control Commands  ***************************************
 
+/* Blocks the FETs from turning on via the MCU pins*/
 void BQ769x2_ForceDisableFETs(BQState *s) {
-	// Disables all FETs using the DFETOFF (BOTHOFF) pin
-	// The DFETOFF pin on the BQ76952EVM should be connected to the MCU board to use this function
 	HAL_GPIO_WritePin(s->CFETOFF_PORT, s->CFETOFF_PIN, GPIO_PIN_RESET); // CFETOFF pin (BOTHOFF) set low
 	HAL_GPIO_WritePin(s->DFETOFF_PORT, s->DFETOFF_PIN, GPIO_PIN_RESET); // DFETOFF pin (BOTHOFF) set low
 }
 
+/* sends the FET_ENABLE command, sets the MCU pins to allow FETs, the sends enable again. Sending FET_ENABLE twice seems to be necessary
+ * 	The CFETOFF and DFETOFF pin on the BQ76952 should be connected to the MCU board to use this function*/
 void BQ769x2_AllowFETs(BQState *s) {
 	// Enables FETS both via comms and via the STM32 hardware overide pins
-	// The DFETOFF pin on the BQ76952EVM should be connected to the MCU board to use this function
+
 	BQ769x2_CommandSubcommand(s, FET_ENABLE);
 	HAL_GPIO_WritePin(s->CFETOFF_PORT, s->CFETOFF_PIN, GPIO_PIN_SET); // CFETOFF pin set high
 	HAL_GPIO_WritePin(s->DFETOFF_PORT, s->DFETOFF_PIN, GPIO_PIN_SET); // DFETOFF pin set high
 	BQ769x2_CommandSubcommand(s, FET_ENABLE); //gotta do this twice, not sure why
 }
 
+/* update BQState with the status of all the FETs */
 void BQ769x2_ReadFETStatus(BQState *s) {
-	// Read FET Status to see which FETs are enabled
+
 	BQ769x2_DirectCommand(s, FETStatus, 0x00, R);
 	s->FET_Status = (RX_data[1] * 256 + RX_data[0]);
 	s->Dsg = ((0x4 & RX_data[0]) >> 2); // discharge FET state
@@ -573,15 +571,17 @@ void BQ769x2_ReadFETStatus(BQState *s) {
 
 // ********************************* BQ769x2 Power Commands   *****************************************
 
+/* Puts the device into SHUTDOWN mode using the RST_SHUT pin
+ * The RST_SHUT pin on the BQ76952 should be connected to the MCU board to use this function
+ */
 void BQ769x2_SetShutdownPin(BQState *s) {
-	// Puts the device into SHUTDOWN mode using the RST_SHUT pin
-	// The RST_SHUT pin on the BQ76952EVM should be connected to the MCU board to use this function
 	HAL_GPIO_WritePin(s->RST_SHUT_PORT, s->RST_SHUT_PIN, GPIO_PIN_SET); // Sets RST_SHUT pin
 }
 
+/* Releases the RST_SHUT pin
+ * The RST_SHUT pin on the BQ76952 should be connected to the MCU board to use this function
+ */
 void BQ769x2_ResetShutdownPin(BQState *s) {
-	// Releases the RST_SHUT pin
-	// The RST_SHUT pin on the BQ76952EVM should be connected to the MCU board to use this function
 	HAL_GPIO_WritePin(s->RST_SHUT_PORT, s->RST_SHUT_PIN, GPIO_PIN_RESET); // Resets RST_SHUT pin
 }
 
@@ -662,25 +662,41 @@ void BQ769x2_ClearFullScan(BQState *s){
 
 // ********************************* BQ769x2 Status and Fault Commands   *****************************************
 
-uint16_t BQ769x2_ReadAlarmStatus(BQState *s) {
-	// Read this register to find out why the ALERT pin was asserted
-	BQ769x2_DirectCommand(s, AlarmStatus, 0x00, R);
-	return (RX_data[1] * 256 + RX_data[0]);
-}
 
+/* Read this register to get the Control Status Pins*/
 uint16_t BQ769x2_ReadControlStatus(BQState *s) {
-	// Read this register to get the Control Status Pins
 	BQ769x2_DirectCommand(s, ControlStatus, 0x00, R);
 	return (RX_data[1] * 256 + RX_data[0]);
 }
 
+/* Read this register to find out why the ALERT pin was asserted */
+uint16_t BQ769x2_ReadAlarmStatus(BQState *s) {
+	BQ769x2_DirectCommand(s, AlarmStatus, 0x00, R);
+	return (RX_data[1] * 256 + RX_data[0]);
+}
+
+/*Read this register to find out why the ALERT raw pin was asserted. Distinct from AlarmStatus in that these do not latch*/
 uint16_t BQ769x2_ReadRawAlarmStatus(BQState *s) {
-	// Read this register to find out why the ALERT raw pin was asserted. Distinct from AlarmStatus in that these do not latch
 	BQ769x2_DirectCommand(s, AlarmRawStatus, 0x00, R);
 	return (RX_data[1] * 256 + RX_data[0]);
 }
 
-//update safety status A,B,C and UV/OV/SCD/OCD/ProtectionsTriggered flags in state struct
+/* read back battery status register */
+void BQ769x2_ReadBatteryStatus(BQState *s) {
+	// Read Battery Status with DirectCommand
+	// This shows which primary protections have been triggered
+	BQ769x2_DirectCommand(s, BatteryStatus, 0x00, R);
+	s->value_BatteryStatus = (RX_data[1] * 256 + RX_data[0]);
+}
+
+/* read back device number register */
+uint16_t BQ769x2_ReadDeviceNumber(BQState *s) {
+	// Read Device Number with SubCommand
+	BQ769x2_Subcommand(s, DEVICE_NUMBER, 0x00, R);
+	return (RX_32Byte[1] * 256 + RX_32Byte[0]);
+}
+
+/* update safety status A,B,C and UV/OV/SCD/OCD/ProtectionsTriggered flags in BQState */
 uint8_t BQ769x2_ReadSafetyStatus(BQState *s) {
 	// Read Safety Status A/B/C and find which bits are set
 	// This shows which primary protections have been triggered
@@ -708,6 +724,7 @@ uint8_t BQ769x2_ReadSafetyStatus(BQState *s) {
 	return 1;
 }
 
+/* reads the permanent fail registers and updates BQState */
 void BQ769x2_ReadPFStatus(BQState *s) {
 	// Read Permanent Fail Status A/B/C and find which bits are set
 	// This shows which permanent failures have been triggered
@@ -723,10 +740,8 @@ void BQ769x2_ReadPFStatus(BQState *s) {
 
 // ********************************* BQ769x2 Measurement Commands   *****************************************
 
+/* read a specific voltage register */
 uint16_t BQ769x2_ReadVoltage(BQState *s, uint8_t command){
-	// This function can be used to read a specific cell voltage or stack / pack / LD voltage
-
-	//RX_data is global var
 	BQ769x2_DirectCommand(s, command, 0x00, R);
 	delayUS(s->tim_hdl, 2000);
 	if (command >= Cell1Voltage && command <= Cell16Voltage) {//Cells 1 through 16 (0x14 to 0x32)
@@ -736,14 +751,9 @@ uint16_t BQ769x2_ReadVoltage(BQState *s, uint8_t command){
 	}
 
 }
-void BQ769x2_ReadAllVoltages(BQState *s){
-	// Reads all cell voltages, Stack voltage, PACK pin voltage, and LD pin voltage
 
-	//int cellvoltageholder = Cell1Voltage; //Cell1Voltage is 0x14
-	//for (int x = 0; x < 16; x++) { //Reads all cell voltages
-	//	CellVoltage[x] = BQ769x2_ReadVoltage(cellvoltageholder);
-	//	cellvoltageholder = cellvoltageholder + 2;
-	//}
+/* update all cell voltages, stack voltage, external voltage, load detect voltage, loads into BQState */
+void BQ769x2_ReadAllVoltages(BQState *s){
 	for (int x = 0; x < 16; x++) { //Reads all cell voltages
 		s->CellVoltage[x] = BQ769x2_ReadVoltage(s, Cell1Voltage + 2 * x); //TODO check this line
 	}
@@ -753,24 +763,25 @@ void BQ769x2_ReadAllVoltages(BQState *s){
 	s->LD_Voltage = BQ769x2_ReadVoltage(s, LDPinVoltage);
 }
 
+/* reads pack current from the CC2 register. Returns an int16 in UserA (typically mA) */
 int16_t BQ769x2_ReadCurrent(BQState *s){
-	// Reads PACK current
-
 	BQ769x2_DirectCommand(s, CC2Current, 0x00, R);
 	return (RX_data[1] * 256 + RX_data[0]); // cell current is reported as an int16 in UserAmps
 }
 
+/* reads a specific temperature register as a float*/
 float BQ769x2_ReadTemperature(BQState *s, uint8_t command) {
 	BQ769x2_DirectCommand(s, command, 0x00, R);
-	//RX_data is a global var
 	return (0.1 * (float) (RX_data[1] * 256 + RX_data[0])) - 273.15; // converts from 0.1K to Celcius
 }
 
+/* update CB_ActiveCells with a 2 byte bitfield of which cells are balancing */
 void BQ769x2_ReadBalancingStatus(BQState *s) {
 	BQ769x2_Subcommand(s, CB_ACTIVE_CELLS, 0x00, R);
-	s->CB_ActiveCells = (RX_32Byte[1] * 256 + RX_32Byte[0]); //CB_ACTIVE_CELLS returns a 2 byte bitfield of which cells are balancing
+	s->CB_ActiveCells = (RX_32Byte[1] * 256 + RX_32Byte[0]);
 }
 
+/* update coulomb count. not tested */
 void BQ769x2_ReadPassQ(BQState *s) { // Read Accumulated Charge and Time from DASTATUS6
 	BQ769x2_Subcommand(s, DASTATUS6, 0x00, R);
 	s->AccumulatedCharge_Int = ((RX_32Byte[3] << 24) + (RX_32Byte[2] << 16)
@@ -781,7 +792,7 @@ void BQ769x2_ReadPassQ(BQState *s) { // Read Accumulated Charge and Time from DA
 			+ (RX_32Byte[9] << 8) + RX_32Byte[8]); //Bytes 8-11
 }
 
-/* update variables in STM32 with values from the BQ chip. Returns 1 if successful, 0 if failed or data not yet ready */
+/* update BQstate. Returns 1 if successful, 0 if failed or data not yet ready */
 uint8_t BQ769x2_ReadBatteryData(BQState *s) {
 	s->AlarmBits = BQ769x2_ReadAlarmStatus(s);
 	if (s->AlarmBits & 0x80) { // Check if FULLSCAN is complete. If set, new measurements are available
