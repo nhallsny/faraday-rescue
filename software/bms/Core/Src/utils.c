@@ -1,7 +1,6 @@
 
 #include "utils.h"
 #include "stm32l0xx_hal.h"
-#include "stm32l0xx_hal_tim.h"
 
 void delayUS(TIM_HandleTypeDef* timer,uint32_t us) {   // Sets the delay in microseconds.
 	__HAL_TIM_SET_COUNTER(timer, 0);  // set the counter value a 0
@@ -35,17 +34,14 @@ float ReverseFloat(const float inFloat) {
 	return retVal;
 }
 
-uint32_t FloatToUInt(float n) {
+uint32_t FloatToUInt32t(float n) {
 	return (uint32_t) (*(uint32_t*) &n);
 }
 
-float UIntToFloat(uint32_t n) {
-	return (float) (*(float*) &n);
+int8_t FloatToInt8t(float n) {
+	return (int8_t) (*(int8_t*) &n);
 }
 
-float unpackFloat(const void *buf) {
-	const unsigned char *b = (const unsigned char*) buf;
-	uint32_t temp = 0;
-	temp = ((b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3]);
-	return *((float*) &temp);
+float UInt32ToFloat(uint32_t n) {
+	return (float) (*(float*) &n);
 }

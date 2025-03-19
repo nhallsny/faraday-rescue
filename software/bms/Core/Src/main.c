@@ -6,7 +6,6 @@
  ******************************************************************************
  * @attention
  *
- * Copyright (c) 2024 STMicroelectronics.
  * All rights reserved.
  *
  * This software is licensed under terms that can be found in the LICENSE file
@@ -225,7 +224,6 @@ void BQ769x2_PrintStatus(BQState *s) {
 
 /* UART Functions
  * ===================== */
-
 //calculate faraday modbus CRC
 uint16_t UART_CRC(uint8_t *buf, uint16_t size) {
 	uint16_t crc = 0xFFFF;
@@ -262,6 +260,7 @@ void THVD2410_Receive() {
 }
 ;
 
+/* interrupt-safe function to clear RxData and wait for a new message */
 void UART_WaitForCommand() {
 
 	if (!UartBusy) {
@@ -270,10 +269,11 @@ void UART_WaitForCommand() {
 			UART_RxData[i] = 0;
 		}
 
-		//start recieve-to-idle interrupt
+		//set transciever to receive
 		THVD2410_Receive();
-		huart2.RxState = HAL_UART_STATE_READY; //TODO EVALUATE THIS WITH SASHA
 
+		//start recieve-to-idle interrupt
+		huart2.RxState = HAL_UART_STATE_READY;
 		if (HAL_UARTEx_ReceiveToIdle_IT(&huart2, UART_RxData, 8) != HAL_OK) {
 			Error_Handler();
 		}
@@ -281,7 +281,9 @@ void UART_WaitForCommand() {
 
 }
 
-//prep the cell voltage message (30 bytes). Refer to documentation for packet format.
+/*
+ * Prep cell balancing message (30 bytes). Refer to documentation for packet format
+ */
 uint8_t UART_PrepCellVoltageMessage() {
 
 	for (int i = 0; i < 32; i++) {
@@ -315,7 +317,9 @@ uint8_t UART_PrepCellVoltageMessage() {
 	return 30;
 }
 
-//prep the cell balancing message (8 bytes). Refer to documentation for packet format
+/*
+ * Prep cell balancing message (8 bytes). Refer to documentation for packet format
+ */
 uint8_t UART_PrepCellBalancingMessage() {
 
 	for (int i = 0; i < 32; i++) {
@@ -359,7 +363,6 @@ uint8_t UART_PrepCellBalancingMessage() {
  * Example request 0x2 0x3 0x0 0x0 0x0 0x1 0x84 0x39
  * Example response 0x2 0x3 0x2 0x0 0x0 0xfc 0x44
  */
-//
 uint8_t UART_PrepBatteryStatusMessage1() {
 
 	for (int i = 0; i < 32; i++) {
@@ -388,6 +391,8 @@ uint8_t UART_PrepBatteryStatusMessage1() {
  */
 uint8_t UART_PrepBatteryStatusMessage2() {
 
+	//get highest cell temp
+
 	for (int i = 0; i < 32; i++) {
 		UART_TxData[i] = 0;
 	}
@@ -396,7 +401,8 @@ uint8_t UART_PrepBatteryStatusMessage2() {
 	UART_TxData[1] = 0x03;
 	UART_TxData[2] = 0x02;
 	UART_TxData[3] = 0x00;
-	UART_TxData[4] = 0x19;
+	// UART_TxData[4] = 0x19; old hard coded value
+	UART_TxData[4] = batt.CellMaxT;
 
 	//add crc in reverse byte order
 	uint16_t crc = UART_CRC(UART_TxData, 5);
@@ -880,6 +886,9 @@ int main(void) {
 
 			//Useful for logging
 			BQ769x2_CalcMinMaxCellV(&batt);
+
+			//Needed for battery status message 2
+			BQ769x2_CalcMinMaxCellT(&batt);
 
 			//Print battery status over RS485 for debug
 			BQ769x2_ReadBatteryStatus(&batt);

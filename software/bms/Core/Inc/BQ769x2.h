@@ -19,7 +19,8 @@ typedef struct {
 	int16_t CellMinV;
 	int16_t CellMaxV;
 	float Temperature[4];
-	int8_t Offset[4];
+	int8_t CellMinT;
+	int8_t CellMaxT;
 	uint16_t Stack_Voltage;
 	uint16_t Pack_Voltage;
 	uint16_t LD_Voltage;
@@ -117,5 +118,6 @@ float BQ769x2_ReadTemperature(BQState *s, uint8_t command);
 
 void BQ769x2_ReadBalancingStatus(BQState *s);
 void BQ769x2_CalcMinMaxCellV(BQState *s);
+void BQ769x2_CalcMinMaxCellT(BQState *s);
 
 #endif

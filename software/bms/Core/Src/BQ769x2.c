@@ -429,8 +429,8 @@ void BQ769x2_Configure(BQState *s) {
 	BQ769x2_SetRegister(s, DefaultAlarmMask, 0x0080, 2);
 
 	/* Current measurement */
-	BQ769x2_SetRegister(s, CCGain, FloatToUInt((float) 0.75684), 4); // 7.5684/R_sense(mOhm) = 7.5684/10 = 7.76
-	BQ769x2_SetRegister(s, CapacityGain, FloatToUInt((float) 225736.32), 4); // CC Gain * 298261.6178 = = 7.5684/10 * 298261.6178 = 225736.32
+	BQ769x2_SetRegister(s, CCGain, FloatToUInt32t((float) 0.75684), 4); // 7.5684/R_sense(mOhm) = 7.5684/10 = 7.76
+	BQ769x2_SetRegister(s, CapacityGain, FloatToUInt32t((float) 225736.32), 4); // CC Gain * 298261.6178 = = 7.5684/10 * 298261.6178 = 225736.32
 
 	/* Thermistor Calibration from TI BQ tool
 	 *
@@ -819,6 +819,25 @@ void BQ769x2_CalcMinMaxCellV(BQState *s) {
 	}
 	s->CellMinV = minV;
 	s->CellMaxV = maxV;
+}
+
+/* calculate min and max temp, update globals. hard coded to use only the first 3 temperatures. Temperature[3] is die temp */
+void BQ769x2_CalcMinMaxCellT(BQState *s) {
+	// Assume the first element is the minimum
+	float minT = 60;
+	float maxT = -50;
+
+	// Loop through the array to find the minimum
+	for (int i = 0; i < 3; i++) {
+		if (s->Temperature[i] < minT){
+			minT = s->Temperature[i];
+		}
+		if (s->Temperature[i] > maxT){
+			maxT = s->Temperature[i];
+		}
+	}
+	s->CellMinT = FloatToInt8t(minT);
+	s->CellMaxT = FloatToInt8t(maxT);
 }
 
 
