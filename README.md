@@ -65,8 +65,8 @@ LICENSE
 README.md
 
 ## Build instructions
-Build instructions & BOM -->[here](https://github.com/nhallsny/faraday-rescue/tree/main/build/README.md)
-JLCPCB BOM --> [here](https://github.com/nhallsny/faraday-rescue/blob/main/build/pcb/faraday-rescue-bms/jlcpcb/production_files/BOM-pcb_battery.csv)
+[Build instructions & BOM](https://github.com/nhallsny/faraday-rescue/tree/main/build/README.md)
+[JLCPCB BOM](https://github.com/nhallsny/faraday-rescue/blob/main/build/pcb/faraday-rescue-bms/jlcpcb/production_files/BOM-pcb_battery.csv)
 Test instructions --> TODO
 
 ## Goals
