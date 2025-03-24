@@ -122,7 +122,15 @@ Pre-crimp the four wires
 - Positive Power (crimp bike end with TE crimp)
 - Negative Power (crimp bike end with TE crimp)
 - RS-485 (Light Blue 4-pin Julet Connector, Male, with Picoblade crimps)
+  ![image](https://github.com/user-attachments/assets/076afced-0ad5-4b8b-b910-d19ff758b152)
+  ![image](https://github.com/user-attachments/assets/f80215be-b8a0-4d96-bdf8-c1df195cedbf)
+
+
 - SWD Programming Header (Green 5-Pin Julet Connector, Female, with picoblade crimps)
+- ![image](https://github.com/user-attachments/assets/44b4b0e8-8ed8-4134-92c3-ba29458a7ebc)
+- ![image](https://github.com/user-attachments/assets/d735ef0e-cef9-4e2a-a837-7d917d903781)
+
+
 
 ![image](https://github.com/user-attachments/assets/75d6984b-1a5e-4671-bc0b-7aac4ad66e07)
 TODO - include crimped power wire and polarity diagram
