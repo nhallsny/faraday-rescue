@@ -55,9 +55,9 @@ IWDG_HandleTypeDef hiwdg;
 RTC_HandleTypeDef hrtc;
 
 /* Program Options */
-#define DEBUG 1 //Debug mode disables RS485 communications to the bike and instead enables debug messages over RS485, including printf.
+#define DEBUG 0 //Debug mode disables RS485 communications to the bike and instead enables debug messages over RS485, including printf.
 #define LEDS 1 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
-#define WATCHDOG 0 //set to 1 to enable watchdog. Good for production, bad for debugging
+#define WATCHDOG 1//set to 1 to enable watchdog. Good for production, bad for debugging
 #define RESET_3V3 0 //set to 1 reset 3v3 rail. Useful if STM32 doesn't sleep after debugging with debugger.
 
 /*Pin Definitions
@@ -337,7 +337,7 @@ uint8_t UART_PrepCellBalancingMessage() {
 		if (batt.ActiveCells & (1 << i)) {
 			//i is the cell number active cell bitfield (0xAAFF)
 			//k is the cell number in faraday index
-			if (batt.CB_ActiveCells & (1 << i)) { //0x0083 is CB_ACTIVE_CELLS from BQ769x2Header
+			if (batt.CB_ActiveCells & (1 << i)) {
 				CB = CB | (1 << k); //TODO determine whether the cell number is mapped correctly
 			};
 			k++;
@@ -754,11 +754,11 @@ int main(void) {
 	}
 
 	/* Initialize BQ State*/
+	BQ769x2_ResetShutdownPin(&batt); // RST_SHUT pin set low just in case
 	BQ769x2_InitState(&batt, &hi2c1, BQ_DEV_ADDR, BQ_CRC_MODE, &htim2,
 	ACTIVE_CELLS, RST_SHUT_PORT, RST_SHUT_PIN, CFETOFF_PORT, CFETOFF_PIN,
 	DFETOFF_PORT, DFETOFF_PIN);
 
-	BQ769x2_ResetShutdownPin(&batt); // RST_SHUT pin set low just in case
 	delayMS(&htim2, 50); //Wait for everything to stabilize
 
 	/* Init watchdog */

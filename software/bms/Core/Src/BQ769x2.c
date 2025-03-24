@@ -231,8 +231,7 @@ void BQ769x2_ReadReg(BQState *s, uint16_t command, uint16_t data, uint8_t type) 
 	TX_Reg[1] = (command >> 8) & 0xff;
 
 	if (type == R) {	//read
-		//I2C_WriteReg(s, 0x3E, TX_Reg, 2); //TODO verify that this works
-		I2C_BQ769x2_WriteReg(s,0x3E,TX_Reg,2);
+		I2C_WriteReg(s,0x3E,TX_Reg,2);
 		delayUS(s->tim_hdl, 2000);
 		I2C_BQ769x2_ReadReg(s, 0x40, RX_32Byte, 16); //RX_32Byte is a global variable, but CRC fails if I read more than 16 bytes
 	}
@@ -459,6 +458,7 @@ void BQ769x2_Configure(BQState *s) {
 	// OTC (over-temperature in charge), UTINT (internal under-temperature), UTD (under-temperature in discharge), UTC (under-temperature in charge)
 	BQ769x2_SetRegister(s, EnabledProtectionsB, 0b01110111, 1);
 
+	/* Set temperature thresholds */
 	BQ769x2_SetRegister(s, UTCThreshold, (signed char) 5, 1); // Set undertemperature in charge threshold. Assume +/- 5C because of poor thermistor coupling
 	BQ769x2_SetRegister(s, UTDThreshold, (signed char) -10, 1); // Set undertemperature in discharge threshold. Assume +/- 5C because of poor thermistor coupling
 	BQ769x2_SetRegister(s, OTCThreshold, (signed char) 40, 1); // Set overtemperature in charge threshold. Assume +/- 5C because of poor thermistor coupling
@@ -472,11 +472,11 @@ void BQ769x2_Configure(BQState *s) {
 	BQ769x2_SetRegister(s, TOSSThreshold, 240, 2); //enable permanent fail if top of stack voltage deviates from cell voltages added up by 240*12 = 2.8V
 	BQ769x2_SetRegister(s, ProtectionConfiguration, 0x02, 2); //Set Permanent Fail to turn FETs off only. Assume that idle will take care of DEEPSLEEP
 
-	/* Balancing Configuration - leaving defaults for deltas (>40mV to start, <20mV to stop*/
+	/* Balancing Configuration*/
 	BQ769x2_SetRegister(s, BalancingConfiguration, 0b00000011, 1); //Set balancing to autonomously operate while in RELAX and CHARGE configurations. Sleep is disabled.
-	BQ769x2_SetRegister(s, CellBalanceMaxCells, 3, 1); //0x933A  - set maximum number of cells that may balance at once. Contributes to thermal limit of BQ chip
-	BQ769x2_SetRegister(s, CellBalanceMinDeltaCharge, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in CHARGE to 15mV
-	BQ769x2_SetRegister(s, CellBalanceMinDeltaRelax, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in RELAX to 15mV
+	BQ769x2_SetRegister(s, CellBalanceMaxCells, 3, 1); //0x933A  - set maximum number of cells that may balance at once to 3. Contributes to thermal limit of BQ chip
+	BQ769x2_SetRegister(s, CellBalanceMinDeltaCharge, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in CHARGE to 25mV
+	BQ769x2_SetRegister(s, CellBalanceMinDeltaRelax, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in RELAX to 25mV
 	BQ769x2_SetRegister(s, CellBalanceStopDeltaCharge, 15, 1); //0x933D - set minimum cell balance delta at which balancing stops in CHARGE to 15mV
 	BQ769x2_SetRegister(s, CellBalanceStopDeltaRelax, 15, 1); //0x933D - set minimum cell balance delta at which balancing stops in RELAX to 15mV
 	BQ769x2_SetRegister(s, CellBalanceMinCellVCharge, (int16_t) 0x0E74, 2); //0x933B -Minimum voltage at which cells start balancing. Set to 3700mV for now
