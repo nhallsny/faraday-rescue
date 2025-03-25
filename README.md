@@ -24,6 +24,9 @@ This respository contains designs for an e-bike battery which replaces the origi
 [software](https://github.com/nhallsny/faraday-rescue/tree/main/software) - Code
 - [bms software](https://github.com/nhallsny/faraday-rescue/tree/main/main/software/bms) - microcontroller code
 
+[test](https://github.com/nhallsny/faraday-rescue/tree/main/test) - How to verify BMS function
+- [realtime](https://github.com/nhallsny/faraday-rescue/tree/main/main/test/realtime) - datalogging templates and results
+
 My revived Faraday:
 ![image](https://github.com/user-attachments/assets/ec35f67b-ac72-4ab8-adf7-9287b601475b)
 
