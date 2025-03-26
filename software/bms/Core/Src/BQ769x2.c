@@ -1,3 +1,25 @@
+
+/**
+  ******************************************************************************
+  * @file    BQ769x2.c
+  * @author  nhallsny
+  * @brief   BQ769x2 battery management chip driver using STM32 HAL.
+  *
+  *
+  ******************************************************************************
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  ==============================================================================
+                     ##### How to use this driver #####
+  ==============================================================================
+
+    See driver instructions in BQ769x2.h
+
+  ******************************************************************************
+  */
 #include "stdio.h"
 #include "stdint.h"
 #include "utils.h"
@@ -5,7 +27,7 @@
 #include "BQ769x2.h"
 
 /*BQ Parameterss */
-// BQ769x2 address is by default 0x10 including R/W bit or 0x8 as 7-bit address. Set this in the call to BQ_
+// BQ769x2 address is by default 0x10 including R/W bit or 0x8 as 7-bit address. Set this in the call to BQ_InitState
 
 #define MAX_BUFFER_SIZE 32
 
@@ -464,6 +486,13 @@ void BQ769x2_Configure(BQState *s) {
 	BQ769x2_SetRegister(s, OTCThreshold, (signed char) 40, 1); // Set overtemperature in charge threshold. Assume +/- 5C because of poor thermistor coupling
 	BQ769x2_SetRegister(s, OTDThreshold, (signed char) 55, 1); // Set overtemperature in discharge threshold. Assume +/- 5C because of poor thermistor coupling
 
+	/*Over and Under Voltage configuration*/
+	BQ769x2_SetRegister(s, CUVThreshold, 0x34, 1); //CUV (under-voltage) Threshold - 0x9275 = 0x34 (2631 mV) this value multiplied by 50.6mV = 2631mV
+	BQ769x2_SetRegister(s, COVThreshold, 0x52, 1); //COV (over-voltage) Threshold - 0x9278 = 0x53 (4199 mV) seems to result in 4.15V max voltage. Go for 0x52 for long life (4.15V max with lift) 82 * 50.6mV = 4149mV
+	BQ769x2_SetRegister(s, ShutdownCellVoltage, 0x0960, 2); // Shutdown 0x923F - enter SHUTDOWN when below this cell voltage to minimize power draw . Set to 2400mV
+	BQ769x2_SetRegister(s, ShutdownStackVoltage, 0x0AC8, 2); //ShutdownStackVoltage 0x9241 - enter SHUTDOWn when the stack is below this voltage - set to 2300mV/cell -> 2760*10mV
+	BQ769x2_SetRegister(s, CUVRecoveryHysteresis, 0x04, 1); //CUVRecoveryHystersis 0x927B - hysteresis value after COV - set to 200mV -> 4* 50.6mV = 202.4mV
+
 	/*Set Permanent Fail for SUV and SOV to just disable FETs to prevent charging of severely undervolted cells. STM32 goes to sleep due to inactivity afterwards*/
 	BQ769x2_SetRegister(s, SUVThreshold, 1900, 2); //0x92CB - set safety undervoltage threshold to 1.9V
 	BQ769x2_SetRegister(s, SOVThreshold, 4500, 2); //0x92CE - set safety overvoltage threshold to 4.5V
@@ -481,13 +510,6 @@ void BQ769x2_Configure(BQState *s) {
 	BQ769x2_SetRegister(s, CellBalanceStopDeltaRelax, 15, 1); //0x933D - set minimum cell balance delta at which balancing stops in RELAX to 15mV
 	BQ769x2_SetRegister(s, CellBalanceMinCellVCharge, (int16_t) 0x0E74, 2); //0x933B -Minimum voltage at which cells start balancing. Set to 3700mV for now
 	BQ769x2_SetRegister(s, CellBalanceMinCellVRelax, (int16_t) 0x0E74, 2); //0x933F -Minimum voltage at which cells start balancing. Set to 3700mV for now
-
-	/*Over and Under Voltage configuration*/
-	BQ769x2_SetRegister(s, CUVThreshold, 0x34, 1); //CUV (under-voltage) Threshold - 0x9275 = 0x34 (2631 mV) this value multiplied by 50.6mV = 2631mV
-	BQ769x2_SetRegister(s, COVThreshold, 0x53, 1); //COV (over-voltage) Threshold - 0x9278 = 0x53 (4199 mV) this value multiplied by 50.6mV = 4199mV
-	BQ769x2_SetRegister(s, ShutdownCellVoltage, 0x0960, 2); // Shutdown 0x923F - enter SHUTDOWN when below this cell voltage to minimize power draw . Set to 2400mV
-	BQ769x2_SetRegister(s, ShutdownStackVoltage, 0x0AC8, 2); //ShutdownStackVoltage 0x9241 - enter SHUTDOWn when the stack is below this voltage - set to 2300mV/cell -> 2760*10mV
-	BQ769x2_SetRegister(s, CUVRecoveryHysteresis, 0x04, 1); //CUVRecoveryHystersis 0x927B - hysteresis value after COV - set to 200mV -> 4* 50.6mV = 202.4mV
 
 	/*Definitions of charge and discharge*/
 	BQ769x2_SetRegister(s, DsgCurrentThreshold, 0x64, 2); //0x9310   Set definition of discharge in mA. 100mA. Balancing happens when current is above the negative of this current.

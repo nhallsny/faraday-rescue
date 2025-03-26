@@ -1,3 +1,76 @@
+/**
+ ******************************************************************************
+ * @file    BQ769x2.h
+ * @author  nhallsny
+ * @brief   BQ769x2 battery management chip driver using STM32 HAL.
+ *
+ *
+ ******************************************************************************
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ ==============================================================================
+ ##### How to use this driver #####
+ ==============================================================================
+
+ Connect the following pins to GPIOs on your MCU:
+
+ - RST_SHUT
+ - CFETOFF
+ - DFETOFF
+ - ALERT -> connect to wake input if using for wake, such as waking when a charger is detected.
+
+ Connect to 400khz I2c with <1.5kOhm pullups
+ - SDA
+ - SCL
+
+ Connect the following to an ADC:
+ - REG18 -> only needed if the MCU needs to confirm the status of the BQ chip.
+
+ For configuration for your application, you will need to set the following:
+ - Set the i2c channel in BQ769x2_InitState (typically 0x10)
+ - Set the active cells (bitfield of which of the 16 channels you're using) in BQ769x2_InitState. If using less than 16 cells, make sure to follow Ti guide for doing this.
+ - Set the CRC mode (1 for active, 0 for inactive) in BQ769x2_InitState
+ - Set RST_SHUT, CFETOFF, and DFETOFF ports and pins
+ - Edit BQ769x2_Configure in BQ769x2.c for your application. Spend lots of quality time with the Technical Reference Manual. https://www.ti.com/lit/pdf/sluucw9
+
+ Generally, there are a few steps to using the driver to get the BQ chip to work. These instructions are based on a simple e-bike application without pre-charge:
+
+ 1. Declare a global BQState on the stack in the main.c
+ > BQState mybatt;
+
+ 2. Call BQ769x2_InitState to initialize the state variable. 0x10 is the default i2c address.
+ > BQ769x2_InitState(&mybatt, i2c_hdl, 0x10, etc)
+
+ 3. Wake up the chip by wiggling RST_SHUT. May not be necessary, but it doesn't hurt
+ > BQ769x2_SoftWake(&mybatt)
+
+ 4. Check repeatedly to make sure the chip is responding to i2c. Only proceed if this succeeds, it could take 20-30 tries while the chip boots.
+ > BQ769x2_Ready(&mybatt)
+
+ 5. Make sure the chip is in NORMAL mode
+ > BQ769x2_Wake(&mybatt)
+
+ 6. Configure the chips and verifies that it was configured. Super super important.
+ > BQ769x2_Initialize(&mybatt)
+
+ 7. Read ADC values
+ > BQ769x2_ReadBatteryData(&mybatt)
+
+ 8. Enable FETs
+ > BQ769x2_AllowFETs(&mybatt);
+
+ What is not supported:
+ - One-time-programming functions, including chip locking
+ - Pre-charge configuration
+ - Coulomb counting
+ - SLEEP State (only using DEEPSLEEP, NORMAL, and SHUTDOWN)
+
+ ******************************************************************************
+ */
+
 #ifndef BQ769x2_H_
 #define BQ769x2_H_
 
@@ -9,11 +82,11 @@ typedef struct {
 	uint8_t i2c_adr;
 	uint8_t i2c_crc; //1 for CRC enabled, 0 for disabled
 	TIM_HandleTypeDef *tim_hdl;
-	GPIO_TypeDef * RST_SHUT_PORT;
+	GPIO_TypeDef *RST_SHUT_PORT;
 	uint8_t RST_SHUT_PIN;
-	GPIO_TypeDef * CFETOFF_PORT;
+	GPIO_TypeDef *CFETOFF_PORT;
 	uint8_t CFETOFF_PIN;
-	GPIO_TypeDef * DFETOFF_PORT;
+	GPIO_TypeDef *DFETOFF_PORT;
 	uint8_t DFETOFF_PIN;
 	int16_t CellVoltage[16];
 	int16_t CellMinV;
@@ -55,9 +128,11 @@ void BQ769x2_Set_Confirm_Register(BQState *s, uint16_t reg_addr,
 		uint32_t reg_data, uint8_t datalen);
 
 // Function Prototypes
-void BQ769x2_InitState(BQState *s, void *i2c_hdl, uint8_t i2c_adr,uint8_t crc_mode,void *tim_hdl,
-		uint16_t ACTIVE_CELLS, GPIO_TypeDef * RST_SHUT_PORT, uint8_t RST_SHUT_PIN, GPIO_TypeDef * CFETOFF_PORT,
-		uint8_t CFETOFF_PIN, GPIO_TypeDef * DFETOFF_PORT, uint8_t DFETOFF_PIN);
+void BQ769x2_InitState(BQState *s, void *i2c_hdl, uint8_t i2c_adr,
+		uint8_t crc_mode, void *tim_hdl, uint16_t ACTIVE_CELLS,
+		GPIO_TypeDef *RST_SHUT_PORT, uint8_t RST_SHUT_PIN,
+		GPIO_TypeDef *CFETOFF_PORT, uint8_t CFETOFF_PIN,
+		GPIO_TypeDef *DFETOFF_PORT, uint8_t DFETOFF_PIN);
 
 unsigned char Checksum(unsigned char *ptr, unsigned char len);
 unsigned char CRC8(unsigned char *ptr, unsigned char len);
@@ -113,8 +188,6 @@ uint16_t BQ769x2_ReadVoltage(BQState *s, uint8_t command);
 void BQ769x2_ReadAllVoltages(BQState *s);
 int16_t BQ769x2_ReadCurrent(BQState *s);
 float BQ769x2_ReadTemperature(BQState *s, uint8_t command);
-
-
 
 void BQ769x2_ReadBalancingStatus(BQState *s);
 void BQ769x2_CalcMinMaxCellV(BQState *s);
