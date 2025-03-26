@@ -6,9 +6,9 @@ Listing out the functions of the BMS and when/what was tested
 | Function  |  What?  | When tested|
 |---|---|---|
 | Overvoltage |  Prevent cells from overcharge | verified 3/24/2025 |
-| Undervoltage |  Prevent cells from undercharge | verified xxxxx |
+| Undervoltage |  Prevent cells from undercharge | verified 3/25/2025 |
 | Charging Overtemp Cutoff| prevent cells from charging beyond their rated temperature  | Verified during soldering of PCB 3/23/2025|
-| Charging Undertemp Cutoff | prevent cells from charging below their rated tempertaure  | Not yet verified |
+| Charging Undertemp Cutoff | prevent cells from charging below their rated temperature  | Not yet verified |
 | Discharging Overtemp Cutoff| prevent cells from discharging above their rated temperature  | Verified during soldering of PCB 3/23/2025|
 | Discharging Undertemp Cutoff | prevent cells from discharging below their rated temperature | Not yet verified |
 | Deep Discharge Lockout |prevent deeply discharge and possibly damaged cells from being charged  | Not yet verified|
