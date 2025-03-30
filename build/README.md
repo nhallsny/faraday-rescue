@@ -109,7 +109,10 @@ _Note - having two nuts on this side technically violates the bolt/nut pattern, 
 ![image](https://github.com/user-attachments/assets/838f58b5-8dae-4d4c-bfc5-6c605501213c)
 
 
-Drill 5 holes into the end cap based on the wire sizes. TODO image which shows all 5 holes
+Drill 5 holes into the end cap based on the wire sizes.
+
+![image](https://github.com/user-attachments/assets/01e7cd8b-2ea5-4db9-a8ce-cb4bebb0f099)
+
 _Note - the wires must be lined up in order to avoid crosses. There isn't much space in the end_
 
 ![image](https://github.com/user-attachments/assets/5cc14871-ce2e-40fc-b46c-27e73f86d825)
@@ -117,6 +120,8 @@ _Note - the wires must be lined up in order to avoid crosses. There isn't much s
 
 Wipe the surface with isopropanol, let dry, and the adhere the the vent to the outside
 ![image](https://github.com/user-attachments/assets/5c3c6ef0-1f11-4706-8f06-0abf7ae63eaa)
+![image](https://github.com/user-attachments/assets/1de10631-fa86-420c-8b3c-ab23d75e34f2)
+
 
 Pre-crimp the four wires 
 - Positive Power (crimp bike end with TE crimp)
@@ -155,7 +160,10 @@ _Note 2 - I made a 'faraday on/off' harness with RS485 and the on/off button bro
 ![image](https://github.com/user-attachments/assets/9f96c159-753c-4f99-91f4-1391e0d92ff2)
 
 
-When satisfied, heat-shrink the battery. TODO image
+When satisfied, heat-shrink the battery.
+
+![image](https://github.com/user-attachments/assets/f037a7bf-b435-4e80-9f80-069b4c5ce7dd)
+
 
 Apply a light coat of o-ring lubricant on the o-rings and install on the aluminum end caps.  TODO image
 
