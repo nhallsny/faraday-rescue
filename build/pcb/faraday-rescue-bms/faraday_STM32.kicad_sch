@@ -11362,7 +11362,7 @@
 	)
 	(symbol
 		(lib_id "Diode:ESD9B5.0ST5G")
-		(at 238.76 62.23 90)
+		(at 238.76 62.23 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -11370,7 +11370,7 @@
 		(dnp no)
 		(uuid "9e7f3265-dd23-4a59-86ef-0a21ed80aedc")
 		(property "Reference" "D22"
-			(at 234.95 57.912 90)
+			(at 242.57 66.548 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11379,7 +11379,7 @@
 			)
 		)
 		(property "Value" "ESD5Z12T1G"
-			(at 223.012 69.342 90)
+			(at 254.508 55.118 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13806,7 +13806,7 @@
 	)
 	(symbol
 		(lib_id "Diode:ESD9B5.0ST5G")
-		(at 238.76 38.1 270)
+		(at 238.76 38.1 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -13814,7 +13814,7 @@
 		(dnp no)
 		(uuid "e17b9520-8a86-4424-8137-7bb67ec804c7")
 		(property "Reference" "D19"
-			(at 236.22 36.83 90)
+			(at 241.3 39.37 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13823,7 +13823,7 @@
 			)
 		)
 		(property "Value" "ESD5Z12T1G"
-			(at 236.474 39.37 90)
+			(at 241.046 36.83 90)
 			(effects
 				(font
 					(size 1.27 1.27)

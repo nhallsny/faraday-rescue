@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000028  00000000  00000000  0000f1d4  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00016864  00000000  00000000  0000f1fc  2**0
+ 12 .debug_info   0001686b  00000000  00000000  0000f1fc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00003590  00000000  00000000  00025a60  2**0
+ 13 .debug_abbrev 00003590  00000000  00000000  00025a67  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000015e0  00000000  00000000  00028ff0  2**3
+ 14 .debug_aranges 000015e0  00000000  00000000  00028ff8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00001102  00000000  00000000  0002a5d0  2**0
+ 15 .debug_rnglists 00001102  00000000  00000000  0002a5d8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  000157f8  00000000  00000000  0002b6d2  2**0
+ 16 .debug_macro  000157f8  00000000  00000000  0002b6da  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001afe1  00000000  00000000  00040eca  2**0
+ 17 .debug_line   0001afe3  00000000  00000000  00040ed2  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0007b3cd  00000000  00000000  0005beab  2**0
+ 18 .debug_str    0007b3cd  00000000  00000000  0005beb5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000d7278  2**0
+ 19 .comment      00000043  00000000  00000000  000d7282  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000602c  00000000  00000000  000d72bc  2**2
+ 20 .debug_frame  0000602c  00000000  00000000  000d72c8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000068  00000000  00000000  000dd2e8  2**0
+ 21 .debug_line_str 00000068  00000000  00000000  000dd2f4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -6831,125 +6831,125 @@ void BQ769x2_Configure(BQState *s) {
  8003384:	2237      	movs	r2, #55	@ 0x37
  8003386:	f7ff fd01 	bl	8002d8c <BQ769x2_SetRegister>
 
+	/*Over and Under Voltage configuration*/
+	BQ769x2_SetRegister(s, CUVThreshold, 0x34, 1); //CUV (under-voltage) Threshold - 0x9275 = 0x34 (2631 mV) this value multiplied by 50.6mV = 2631mV
+ 800338a:	4992      	ldr	r1, [pc, #584]	@ (80035d4 <BQ769x2_Configure+0x3f8>)
+ 800338c:	6878      	ldr	r0, [r7, #4]
+ 800338e:	2301      	movs	r3, #1
+ 8003390:	2234      	movs	r2, #52	@ 0x34
+ 8003392:	f7ff fcfb 	bl	8002d8c <BQ769x2_SetRegister>
+	BQ769x2_SetRegister(s, COVThreshold, 0x52, 1); //COV (over-voltage) Threshold - 0x9278 = 0x53 (4199 mV) seems to result in 4.15V max voltage. Go for 0x52 for long life (4.15V max with lift) 82 * 50.6mV = 4149mV
+ 8003396:	4990      	ldr	r1, [pc, #576]	@ (80035d8 <BQ769x2_Configure+0x3fc>)
+ 8003398:	6878      	ldr	r0, [r7, #4]
+ 800339a:	2301      	movs	r3, #1
+ 800339c:	2252      	movs	r2, #82	@ 0x52
+ 800339e:	f7ff fcf5 	bl	8002d8c <BQ769x2_SetRegister>
+	BQ769x2_SetRegister(s, ShutdownCellVoltage, 0x0960, 2); // Shutdown 0x923F - enter SHUTDOWN when below this cell voltage to minimize power draw . Set to 2400mV
+ 80033a2:	2396      	movs	r3, #150	@ 0x96
+ 80033a4:	011a      	lsls	r2, r3, #4
+ 80033a6:	498d      	ldr	r1, [pc, #564]	@ (80035dc <BQ769x2_Configure+0x400>)
+ 80033a8:	6878      	ldr	r0, [r7, #4]
+ 80033aa:	2302      	movs	r3, #2
+ 80033ac:	f7ff fcee 	bl	8002d8c <BQ769x2_SetRegister>
+	BQ769x2_SetRegister(s, ShutdownStackVoltage, 0x0AC8, 2); //ShutdownStackVoltage 0x9241 - enter SHUTDOWn when the stack is below this voltage - set to 2300mV/cell -> 2760*10mV
+ 80033b0:	4a8b      	ldr	r2, [pc, #556]	@ (80035e0 <BQ769x2_Configure+0x404>)
+ 80033b2:	498c      	ldr	r1, [pc, #560]	@ (80035e4 <BQ769x2_Configure+0x408>)
+ 80033b4:	6878      	ldr	r0, [r7, #4]
+ 80033b6:	2302      	movs	r3, #2
+ 80033b8:	f7ff fce8 	bl	8002d8c <BQ769x2_SetRegister>
+	BQ769x2_SetRegister(s, CUVRecoveryHysteresis, 0x04, 1); //CUVRecoveryHystersis 0x927B - hysteresis value after COV - set to 200mV -> 4* 50.6mV = 202.4mV
+ 80033bc:	498a      	ldr	r1, [pc, #552]	@ (80035e8 <BQ769x2_Configure+0x40c>)
+ 80033be:	6878      	ldr	r0, [r7, #4]
+ 80033c0:	2301      	movs	r3, #1
+ 80033c2:	2204      	movs	r2, #4
+ 80033c4:	f7ff fce2 	bl	8002d8c <BQ769x2_SetRegister>
+
 	/*Set Permanent Fail for SUV and SOV to just disable FETs to prevent charging of severely undervolted cells. STM32 goes to sleep due to inactivity afterwards*/
 	BQ769x2_SetRegister(s, SUVThreshold, 1900, 2); //0x92CB - set safety undervoltage threshold to 1.9V
- 800338a:	4a92      	ldr	r2, [pc, #584]	@ (80035d4 <BQ769x2_Configure+0x3f8>)
- 800338c:	4992      	ldr	r1, [pc, #584]	@ (80035d8 <BQ769x2_Configure+0x3fc>)
- 800338e:	6878      	ldr	r0, [r7, #4]
- 8003390:	2302      	movs	r3, #2
- 8003392:	f7ff fcfb 	bl	8002d8c <BQ769x2_SetRegister>
+ 80033c8:	4a88      	ldr	r2, [pc, #544]	@ (80035ec <BQ769x2_Configure+0x410>)
+ 80033ca:	4989      	ldr	r1, [pc, #548]	@ (80035f0 <BQ769x2_Configure+0x414>)
+ 80033cc:	6878      	ldr	r0, [r7, #4]
+ 80033ce:	2302      	movs	r3, #2
+ 80033d0:	f7ff fcdc 	bl	8002d8c <BQ769x2_SetRegister>
 	BQ769x2_SetRegister(s, SOVThreshold, 4500, 2); //0x92CE - set safety overvoltage threshold to 4.5V
- 8003396:	4a91      	ldr	r2, [pc, #580]	@ (80035dc <BQ769x2_Configure+0x400>)
- 8003398:	4991      	ldr	r1, [pc, #580]	@ (80035e0 <BQ769x2_Configure+0x404>)
- 800339a:	6878      	ldr	r0, [r7, #4]
- 800339c:	2302      	movs	r3, #2
- 800339e:	f7ff fcf5 	bl	8002d8c <BQ769x2_SetRegister>
+ 80033d4:	4a87      	ldr	r2, [pc, #540]	@ (80035f4 <BQ769x2_Configure+0x418>)
+ 80033d6:	4988      	ldr	r1, [pc, #544]	@ (80035f8 <BQ769x2_Configure+0x41c>)
+ 80033d8:	6878      	ldr	r0, [r7, #4]
+ 80033da:	2302      	movs	r3, #2
+ 80033dc:	f7ff fcd6 	bl	8002d8c <BQ769x2_SetRegister>
 	BQ769x2_SetRegister(s, EnabledPFA, 0b00000011, 1); //Enable Permanent Fail for Safety Undervoltage and Safety Overvoltage Only
- 80033a2:	4990      	ldr	r1, [pc, #576]	@ (80035e4 <BQ769x2_Configure+0x408>)
- 80033a4:	6878      	ldr	r0, [r7, #4]
- 80033a6:	2301      	movs	r3, #1
- 80033a8:	2203      	movs	r2, #3
- 80033aa:	f7ff fcef 	bl	8002d8c <BQ769x2_SetRegister>
+ 80033e0:	4986      	ldr	r1, [pc, #536]	@ (80035fc <BQ769x2_Configure+0x420>)
+ 80033e2:	6878      	ldr	r0, [r7, #4]
+ 80033e4:	2301      	movs	r3, #1
+ 80033e6:	2203      	movs	r2, #3
+ 80033e8:	f7ff fcd0 	bl	8002d8c <BQ769x2_SetRegister>
 	BQ769x2_SetRegister(s, EnabledPFD, 0b00000001, 1); //Enable Permanent Fail for Safety Undervoltage and Safety Overvoltage Only
- 80033ae:	498e      	ldr	r1, [pc, #568]	@ (80035e8 <BQ769x2_Configure+0x40c>)
- 80033b0:	6878      	ldr	r0, [r7, #4]
- 80033b2:	2301      	movs	r3, #1
- 80033b4:	2201      	movs	r2, #1
- 80033b6:	f7ff fce9 	bl	8002d8c <BQ769x2_SetRegister>
+ 80033ec:	4984      	ldr	r1, [pc, #528]	@ (8003600 <BQ769x2_Configure+0x424>)
+ 80033ee:	6878      	ldr	r0, [r7, #4]
+ 80033f0:	2301      	movs	r3, #1
+ 80033f2:	2201      	movs	r2, #1
+ 80033f4:	f7ff fcca 	bl	8002d8c <BQ769x2_SetRegister>
 	BQ769x2_SetRegister(s, TOSSThreshold, 240, 2); //enable permanent fail if top of stack voltage deviates from cell voltages added up by 240*12 = 2.8V
- 80033ba:	498c      	ldr	r1, [pc, #560]	@ (80035ec <BQ769x2_Configure+0x410>)
- 80033bc:	6878      	ldr	r0, [r7, #4]
- 80033be:	2302      	movs	r3, #2
- 80033c0:	22f0      	movs	r2, #240	@ 0xf0
- 80033c2:	f7ff fce3 	bl	8002d8c <BQ769x2_SetRegister>
+ 80033f8:	4982      	ldr	r1, [pc, #520]	@ (8003604 <BQ769x2_Configure+0x428>)
+ 80033fa:	6878      	ldr	r0, [r7, #4]
+ 80033fc:	2302      	movs	r3, #2
+ 80033fe:	22f0      	movs	r2, #240	@ 0xf0
+ 8003400:	f7ff fcc4 	bl	8002d8c <BQ769x2_SetRegister>
 	BQ769x2_SetRegister(s, ProtectionConfiguration, 0x02, 2); //Set Permanent Fail to turn FETs off only. Assume that idle will take care of DEEPSLEEP
- 80033c6:	498a      	ldr	r1, [pc, #552]	@ (80035f0 <BQ769x2_Configure+0x414>)
- 80033c8:	6878      	ldr	r0, [r7, #4]
- 80033ca:	2302      	movs	r3, #2
- 80033cc:	2202      	movs	r2, #2
- 80033ce:	f7ff fcdd 	bl	8002d8c <BQ769x2_SetRegister>
+ 8003404:	4980      	ldr	r1, [pc, #512]	@ (8003608 <BQ769x2_Configure+0x42c>)
+ 8003406:	6878      	ldr	r0, [r7, #4]
+ 8003408:	2302      	movs	r3, #2
+ 800340a:	2202      	movs	r2, #2
+ 800340c:	f7ff fcbe 	bl	8002d8c <BQ769x2_SetRegister>
 
 	/* Balancing Configuration*/
 	BQ769x2_SetRegister(s, BalancingConfiguration, 0b00000011, 1); //Set balancing to autonomously operate while in RELAX and CHARGE configurations. Sleep is disabled.
- 80033d2:	4988      	ldr	r1, [pc, #544]	@ (80035f4 <BQ769x2_Configure+0x418>)
- 80033d4:	6878      	ldr	r0, [r7, #4]
- 80033d6:	2301      	movs	r3, #1
- 80033d8:	2203      	movs	r2, #3
- 80033da:	f7ff fcd7 	bl	8002d8c <BQ769x2_SetRegister>
+ 8003410:	497e      	ldr	r1, [pc, #504]	@ (800360c <BQ769x2_Configure+0x430>)
+ 8003412:	6878      	ldr	r0, [r7, #4]
+ 8003414:	2301      	movs	r3, #1
+ 8003416:	2203      	movs	r2, #3
+ 8003418:	f7ff fcb8 	bl	8002d8c <BQ769x2_SetRegister>
 	BQ769x2_SetRegister(s, CellBalanceMaxCells, 3, 1); //0x933A  - set maximum number of cells that may balance at once to 3. Contributes to thermal limit of BQ chip
- 80033de:	4986      	ldr	r1, [pc, #536]	@ (80035f8 <BQ769x2_Configure+0x41c>)
- 80033e0:	6878      	ldr	r0, [r7, #4]
- 80033e2:	2301      	movs	r3, #1
- 80033e4:	2203      	movs	r2, #3
- 80033e6:	f7ff fcd1 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, CellBalanceMinDeltaCharge, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in CHARGE to 25mV
- 80033ea:	4984      	ldr	r1, [pc, #528]	@ (80035fc <BQ769x2_Configure+0x420>)
- 80033ec:	6878      	ldr	r0, [r7, #4]
- 80033ee:	2301      	movs	r3, #1
- 80033f0:	2219      	movs	r2, #25
- 80033f2:	f7ff fccb 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, CellBalanceMinDeltaRelax, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in RELAX to 25mV
- 80033f6:	4982      	ldr	r1, [pc, #520]	@ (8003600 <BQ769x2_Configure+0x424>)
- 80033f8:	6878      	ldr	r0, [r7, #4]
- 80033fa:	2301      	movs	r3, #1
- 80033fc:	2219      	movs	r2, #25
- 80033fe:	f7ff fcc5 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, CellBalanceStopDeltaCharge, 15, 1); //0x933D - set minimum cell balance delta at which balancing stops in CHARGE to 15mV
- 8003402:	4980      	ldr	r1, [pc, #512]	@ (8003604 <BQ769x2_Configure+0x428>)
- 8003404:	6878      	ldr	r0, [r7, #4]
- 8003406:	2301      	movs	r3, #1
- 8003408:	220f      	movs	r2, #15
- 800340a:	f7ff fcbf 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, CellBalanceStopDeltaRelax, 15, 1); //0x933D - set minimum cell balance delta at which balancing stops in RELAX to 15mV
- 800340e:	497e      	ldr	r1, [pc, #504]	@ (8003608 <BQ769x2_Configure+0x42c>)
- 8003410:	6878      	ldr	r0, [r7, #4]
- 8003412:	2301      	movs	r3, #1
- 8003414:	220f      	movs	r2, #15
- 8003416:	f7ff fcb9 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, CellBalanceMinCellVCharge, (int16_t) 0x0E74, 2); //0x933B -Minimum voltage at which cells start balancing. Set to 3700mV for now
- 800341a:	4a7c      	ldr	r2, [pc, #496]	@ (800360c <BQ769x2_Configure+0x430>)
  800341c:	497c      	ldr	r1, [pc, #496]	@ (8003610 <BQ769x2_Configure+0x434>)
  800341e:	6878      	ldr	r0, [r7, #4]
- 8003420:	2302      	movs	r3, #2
- 8003422:	f7ff fcb3 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, CellBalanceMinCellVRelax, (int16_t) 0x0E74, 2); //0x933F -Minimum voltage at which cells start balancing. Set to 3700mV for now
- 8003426:	4a79      	ldr	r2, [pc, #484]	@ (800360c <BQ769x2_Configure+0x430>)
+ 8003420:	2301      	movs	r3, #1
+ 8003422:	2203      	movs	r2, #3
+ 8003424:	f7ff fcb2 	bl	8002d8c <BQ769x2_SetRegister>
+	BQ769x2_SetRegister(s, CellBalanceMinDeltaCharge, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in CHARGE to 25mV
  8003428:	497a      	ldr	r1, [pc, #488]	@ (8003614 <BQ769x2_Configure+0x438>)
  800342a:	6878      	ldr	r0, [r7, #4]
- 800342c:	2302      	movs	r3, #2
- 800342e:	f7ff fcad 	bl	8002d8c <BQ769x2_SetRegister>
-
-	/*Over and Under Voltage configuration*/
-	BQ769x2_SetRegister(s, CUVThreshold, 0x34, 1); //CUV (under-voltage) Threshold - 0x9275 = 0x34 (2631 mV) this value multiplied by 50.6mV = 2631mV
- 8003432:	4979      	ldr	r1, [pc, #484]	@ (8003618 <BQ769x2_Configure+0x43c>)
- 8003434:	6878      	ldr	r0, [r7, #4]
- 8003436:	2301      	movs	r3, #1
- 8003438:	2234      	movs	r2, #52	@ 0x34
- 800343a:	f7ff fca7 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, COVThreshold, 0x53, 1); //COV (over-voltage) Threshold - 0x9278 = 0x53 (4199 mV) this value multiplied by 50.6mV = 4199mV
- 800343e:	4977      	ldr	r1, [pc, #476]	@ (800361c <BQ769x2_Configure+0x440>)
- 8003440:	6878      	ldr	r0, [r7, #4]
- 8003442:	2301      	movs	r3, #1
- 8003444:	2253      	movs	r2, #83	@ 0x53
- 8003446:	f7ff fca1 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, ShutdownCellVoltage, 0x0960, 2); // Shutdown 0x923F - enter SHUTDOWN when below this cell voltage to minimize power draw . Set to 2400mV
- 800344a:	2396      	movs	r3, #150	@ 0x96
- 800344c:	011a      	lsls	r2, r3, #4
- 800344e:	4974      	ldr	r1, [pc, #464]	@ (8003620 <BQ769x2_Configure+0x444>)
- 8003450:	6878      	ldr	r0, [r7, #4]
- 8003452:	2302      	movs	r3, #2
+ 800342c:	2301      	movs	r3, #1
+ 800342e:	2219      	movs	r2, #25
+ 8003430:	f7ff fcac 	bl	8002d8c <BQ769x2_SetRegister>
+	BQ769x2_SetRegister(s, CellBalanceMinDeltaRelax, 25, 1); //0x933D - set minimum cell balance delta at which balancing starts in RELAX to 25mV
+ 8003434:	4978      	ldr	r1, [pc, #480]	@ (8003618 <BQ769x2_Configure+0x43c>)
+ 8003436:	6878      	ldr	r0, [r7, #4]
+ 8003438:	2301      	movs	r3, #1
+ 800343a:	2219      	movs	r2, #25
+ 800343c:	f7ff fca6 	bl	8002d8c <BQ769x2_SetRegister>
+	BQ769x2_SetRegister(s, CellBalanceStopDeltaCharge, 15, 1); //0x933D - set minimum cell balance delta at which balancing stops in CHARGE to 15mV
+ 8003440:	4976      	ldr	r1, [pc, #472]	@ (800361c <BQ769x2_Configure+0x440>)
+ 8003442:	6878      	ldr	r0, [r7, #4]
+ 8003444:	2301      	movs	r3, #1
+ 8003446:	220f      	movs	r2, #15
+ 8003448:	f7ff fca0 	bl	8002d8c <BQ769x2_SetRegister>
+	BQ769x2_SetRegister(s, CellBalanceStopDeltaRelax, 15, 1); //0x933D - set minimum cell balance delta at which balancing stops in RELAX to 15mV
+ 800344c:	4974      	ldr	r1, [pc, #464]	@ (8003620 <BQ769x2_Configure+0x444>)
+ 800344e:	6878      	ldr	r0, [r7, #4]
+ 8003450:	2301      	movs	r3, #1
+ 8003452:	220f      	movs	r2, #15
  8003454:	f7ff fc9a 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, ShutdownStackVoltage, 0x0AC8, 2); //ShutdownStackVoltage 0x9241 - enter SHUTDOWn when the stack is below this voltage - set to 2300mV/cell -> 2760*10mV
+	BQ769x2_SetRegister(s, CellBalanceMinCellVCharge, (int16_t) 0x0E74, 2); //0x933B -Minimum voltage at which cells start balancing. Set to 3700mV for now
  8003458:	4a72      	ldr	r2, [pc, #456]	@ (8003624 <BQ769x2_Configure+0x448>)
  800345a:	4973      	ldr	r1, [pc, #460]	@ (8003628 <BQ769x2_Configure+0x44c>)
  800345c:	6878      	ldr	r0, [r7, #4]
  800345e:	2302      	movs	r3, #2
  8003460:	f7ff fc94 	bl	8002d8c <BQ769x2_SetRegister>
-	BQ769x2_SetRegister(s, CUVRecoveryHysteresis, 0x04, 1); //CUVRecoveryHystersis 0x927B - hysteresis value after COV - set to 200mV -> 4* 50.6mV = 202.4mV
- 8003464:	4971      	ldr	r1, [pc, #452]	@ (800362c <BQ769x2_Configure+0x450>)
- 8003466:	6878      	ldr	r0, [r7, #4]
- 8003468:	2301      	movs	r3, #1
- 800346a:	2204      	movs	r2, #4
+	BQ769x2_SetRegister(s, CellBalanceMinCellVRelax, (int16_t) 0x0E74, 2); //0x933F -Minimum voltage at which cells start balancing. Set to 3700mV for now
+ 8003464:	4a6f      	ldr	r2, [pc, #444]	@ (8003624 <BQ769x2_Configure+0x448>)
+ 8003466:	4971      	ldr	r1, [pc, #452]	@ (800362c <BQ769x2_Configure+0x450>)
+ 8003468:	6878      	ldr	r0, [r7, #4]
+ 800346a:	2302      	movs	r3, #2
  800346c:	f7ff fc8e 	bl	8002d8c <BQ769x2_SetRegister>
 
 	/*Definitions of charge and discharge*/
@@ -7100,29 +7100,29 @@ void BQ769x2_Configure(BQState *s) {
  80035c8:	000092a9 	.word	0x000092a9
  80035cc:	0000929a 	.word	0x0000929a
  80035d0:	0000929d 	.word	0x0000929d
- 80035d4:	0000076c 	.word	0x0000076c
- 80035d8:	000092cb 	.word	0x000092cb
- 80035dc:	00001194 	.word	0x00001194
- 80035e0:	000092ce 	.word	0x000092ce
- 80035e4:	000092c0 	.word	0x000092c0
- 80035e8:	000092c3 	.word	0x000092c3
- 80035ec:	000092d1 	.word	0x000092d1
- 80035f0:	0000925f 	.word	0x0000925f
- 80035f4:	00009335 	.word	0x00009335
- 80035f8:	0000933a 	.word	0x0000933a
- 80035fc:	0000933d 	.word	0x0000933d
- 8003600:	00009341 	.word	0x00009341
- 8003604:	0000933e 	.word	0x0000933e
- 8003608:	00009342 	.word	0x00009342
- 800360c:	00000e74 	.word	0x00000e74
- 8003610:	0000933b 	.word	0x0000933b
- 8003614:	0000933f 	.word	0x0000933f
- 8003618:	00009275 	.word	0x00009275
- 800361c:	00009278 	.word	0x00009278
- 8003620:	0000923f 	.word	0x0000923f
- 8003624:	00000ac8 	.word	0x00000ac8
- 8003628:	00009241 	.word	0x00009241
- 800362c:	0000927b 	.word	0x0000927b
+ 80035d4:	00009275 	.word	0x00009275
+ 80035d8:	00009278 	.word	0x00009278
+ 80035dc:	0000923f 	.word	0x0000923f
+ 80035e0:	00000ac8 	.word	0x00000ac8
+ 80035e4:	00009241 	.word	0x00009241
+ 80035e8:	0000927b 	.word	0x0000927b
+ 80035ec:	0000076c 	.word	0x0000076c
+ 80035f0:	000092cb 	.word	0x000092cb
+ 80035f4:	00001194 	.word	0x00001194
+ 80035f8:	000092ce 	.word	0x000092ce
+ 80035fc:	000092c0 	.word	0x000092c0
+ 8003600:	000092c3 	.word	0x000092c3
+ 8003604:	000092d1 	.word	0x000092d1
+ 8003608:	0000925f 	.word	0x0000925f
+ 800360c:	00009335 	.word	0x00009335
+ 8003610:	0000933a 	.word	0x0000933a
+ 8003614:	0000933d 	.word	0x0000933d
+ 8003618:	00009341 	.word	0x00009341
+ 800361c:	0000933e 	.word	0x0000933e
+ 8003620:	00009342 	.word	0x00009342
+ 8003624:	00000e74 	.word	0x00000e74
+ 8003628:	0000933b 	.word	0x0000933b
+ 800362c:	0000933f 	.word	0x0000933f
  8003630:	00009310 	.word	0x00009310
  8003634:	00009312 	.word	0x00009312
  8003638:	00009280 	.word	0x00009280
