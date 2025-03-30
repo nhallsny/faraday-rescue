@@ -1,3 +1,6 @@
 # Realtime Data Logging
 
-Use STMSTudion and the programming header
+Use STMSTudio and the programming header.
+
+List of memory locations for the batt state struct:
+
