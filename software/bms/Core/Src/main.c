@@ -56,8 +56,8 @@ RTC_HandleTypeDef hrtc;
 
 /* Program Options */
 #define DEBUG 0 //Debug mode disables RS485 communications to the bike and instead enables debug messages over RS485, including printf.
-#define LEDS 1 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
-#define WATCHDOG 1//set to 1 to enable watchdog. Good for production, bad for debugging
+#define LEDS 0 //Set to 1 to enable LEDs, 0 to disable. LEDs consume surprisingly large amounts of power because of the linear regulator from 48V to 3.3V
+#define WATCHDOG 1 //set to 1 to enable watchdog. Good for production, bad for debugging
 #define RESET_3V3 0 //set to 1 reset 3v3 rail. Useful if STM32 doesn't sleep after debugging with debugger.
 
 /*Pin Definitions

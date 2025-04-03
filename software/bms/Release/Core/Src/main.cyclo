@@ -17,5 +17,5 @@
 ../Core/Src/main.c:628:6:Sleep	2
 ../Core/Src/main.c:487:6:STM32_HandleButton	3
 ../Core/Src/main.c:509:6:STM32_HandleInactivity	4
-../Core/Src/main.c:707:5:main	30
+../Core/Src/main.c:707:5:main	28
 ../Core/Src/main.c:1375:6:HAL_UART_ErrorCallback	7

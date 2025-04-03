@@ -2,7 +2,7 @@
 ../Core/Src/main.c:252:6:THVD2410_Transmit	8	static
 ../Core/Src/main.c:193:6:BQ769x2_PrintStatus	96	static
 ../Core/Src/main.c:228:10:UART_CRC	20	static
-../Core/Src/main.c:417:6:UART_Respond	40	static
+../Core/Src/main.c:417:6:UART_Respond	32	static
 ../Core/Src/main.c:504:9:STM32_Wake_Button_Pressed	8	static
 ../Core/Src/main.c:542:6:STM32_Stop	72	static,ignoring_inline_asm
 ../Core/Src/main.c:614:6:STM32_CheckForWatchdogReset	0	static

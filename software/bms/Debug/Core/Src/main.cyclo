@@ -20,7 +20,7 @@
 ../Core/Src/main.c:667:6:STM32_UpdateFETLEDs	1
 ../Core/Src/main.c:677:6:STM32_BlinkForever	1
 ../Core/Src/main.c:685:9:STM32_ShouldStop	2
-../Core/Src/main.c:707:5:main	18
+../Core/Src/main.c:707:5:main	17
 ../Core/Src/main.c:938:1:__io_putchar	1
 ../Core/Src/main.c:959:13:EXTI0_1_IRQHandler_Config	1
 ../Core/Src/main.c:981:13:EXTI2_3_IRQHandler_Config	1
