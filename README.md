@@ -24,6 +24,9 @@ This respository contains designs for an e-bike battery which replaces the origi
 [software](https://github.com/nhallsny/faraday-rescue/tree/main/software) - Code
 - [bms software](https://github.com/nhallsny/faraday-rescue/tree/main/main/software/bms) - microcontroller code
 
+[test](https://github.com/nhallsny/faraday-rescue/tree/main/test) - How to verify BMS function
+- [realtime](https://github.com/nhallsny/faraday-rescue/tree/main/main/test/realtime) - datalogging templates and results
+
 My revived Faraday:
 ![image](https://github.com/user-attachments/assets/ec35f67b-ac72-4ab8-adf7-9287b601475b)
 
@@ -65,8 +68,8 @@ LICENSE
 README.md
 
 ## Build instructions
-Build instructions & BOM -->[here](https://github.com/nhallsny/faraday-rescue/tree/main/build/README.md)
-JLCPCB BOM --> [here](https://github.com/nhallsny/faraday-rescue/blob/main/build/pcb/faraday-rescue-bms/jlcpcb/production_files/BOM-pcb_battery.csv)
+[Build instructions & BOM](https://github.com/nhallsny/faraday-rescue/tree/main/build/README.md)
+[JLCPCB BOM](https://github.com/nhallsny/faraday-rescue/blob/main/build/pcb/faraday-rescue-bms/jlcpcb/production_files/BOM-pcb_battery.csv)
 Test instructions --> TODO
 
 ## Goals
