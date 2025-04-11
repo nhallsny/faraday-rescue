@@ -29,6 +29,7 @@ This is a build guide for assembling a faraday rescue battery.
 | power_connector_v11     | Battery to faraday power connector  | 1        | 3D Print 10% GF ASA                                                           |
 | PCB, Long               | Custom PCBA                  | 1        | JLCPCB                                                                |
 | PCB, Short              | Custom PCB                   | 1        | JLCPCB                                                                |
+| Thermal paste or 2mm gap pad, cut into 6mm squares             | Thermally conductive, insulating heat transfer pad for thermistors                   | 3        | Amazon                                                              |
 | tube_cap-v14            | Aluminum tubing end cap      | 2        | JLCPCB                                                                |
 | Keyelco 5104            | Jumpers between PCBs         | 4        | Digikey                                                               |
 | Wire 16ga               | Power wire, red/black        | 2        | Digikey                                                               |
