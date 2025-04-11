@@ -97,7 +97,7 @@ Bolt together, align, and install the first two modules
 Place, bolt, and solder the remaining modules. Adjust the modules prior to soldering to eliminate twist and non-concentric modules as much as possible.
 ![image](https://github.com/user-attachments/assets/9208fd61-4b22-4b58-af84-c6071a1bf9a0)
 
-Heat-set the inserts into the non-wire-side end cap
+Heat-set the insert into the non-wire-side end cap
 ![image](https://github.com/user-attachments/assets/8ebbc298-32c9-4bce-9325-bfd7bfb7dfc0)
 
 Bolt the end-cap into place onto the side with the stub PCB (the negative-most side). The bolts should be flush or close to flush.
@@ -107,11 +107,11 @@ Test fit the end-cap to make sure it fits flush
 ![image](https://github.com/user-attachments/assets/589d33f1-d7c2-4181-a72a-2bf287fa1e1e)
 
 Heat-set the M4 insert into the wire-side end cap and install 2 nuts.
-_Note - having two nuts on this side technically violates the bolt/nut pattern, but trust me, it's way easier to assemble._
+_Note - having two nuts on this side technically violates the bolt/nut pattern, but trust me, it's way easier to assemble this way._
 ![image](https://github.com/user-attachments/assets/838f58b5-8dae-4d4c-bfc5-6c605501213c)
 
 
-Drill 5 holes into the end cap based on the wire sizes.
+Measure your wire sizes and drill 5 holes into the end cap based on the wire sizes. Take care to make sure there are no wire crosses once installed. The 5th hole is for the breather vent.
 
 ![image](https://github.com/user-attachments/assets/01e7cd8b-2ea5-4db9-a8ce-cb4bebb0f099)
 
@@ -136,7 +136,6 @@ Pre-crimp the four wires
 - SWD Programming Header (Green 5-Pin Julet Connector, Female, with picoblade crimps)
 - ![image](https://github.com/user-attachments/assets/44b4b0e8-8ed8-4134-92c3-ba29458a7ebc)
 - ![image](https://github.com/user-attachments/assets/d735ef0e-cef9-4e2a-a837-7d917d903781)
-
 
 
 ![image](https://github.com/user-attachments/assets/75d6984b-1a5e-4671-bc0b-7aac4ad66e07)
