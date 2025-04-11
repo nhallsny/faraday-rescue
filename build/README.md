@@ -21,8 +21,8 @@ This is a build guide for assembling a faraday rescue battery.
 | Part Number             | Description                  | Quantity | Link                                                                  |
 |-------------------------|------------------------------|----------|-----------------------------------------------------------------------|
 | INR18650-35E            | Batteries                    | 24       | https://www.18650batterystore.com/products/samsung-35e                |
-| weld_tab_large-v42       | Custom Nickel Tabs, 0.15mm   | 16       | DIY                                                                   |
-| weld_tab_small-v42       | Custom Nickel Tabs, 0.15mm   | 16       | DIY                                                                   |
+| weld_tab_large-v42       | Custom Nickel Tabs, 0.15mm   | 16       | Laser or Waterjet Cut                                                                |
+| weld_tab_small-v42       | Custom Nickel Tabs, 0.15mm   | 16       | Laser or Waterjet Cut                                                                   |
 | module_end-v41           | Module end caps              | 16       | 3D Print 10% GF ASA                                                                   |
 | end_bracket_wire_end-v31    | Module stack end cap, wire side | 1        | 3D Print 10% GF ASA                                                               |
 | end_bracket_non_wire_end-v10| Module stack end cap, non-wire side  | 1        | 3D Print 10% GF ASA                                                         |
