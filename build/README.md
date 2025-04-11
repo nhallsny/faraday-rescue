@@ -150,7 +150,7 @@ Insert the power wires into the printed housing
 Pass the power wires through the holes drilled. Solder the XT30 to the backside
 TODO - include image of XT30 soldered on backside
 
-Pot the back of the housing with DOW 738. Use a toothpick to make sure that the coverage is 100%
+Pot the back of the housing with DOW 738 (in green). Use a toothpick to make sure that the coverage is 100%
 ![image](https://github.com/user-attachments/assets/5c6b1237-7f63-4169-bf57-5ccb5373413d)
 
 Wait for the DOW 738 to dry
@@ -170,7 +170,10 @@ Apply a light coat of o-ring lubricant on the o-rings and install on the aluminu
 
 Install the wire-side cap (if you haven't already). Use the small 4mm ID o-ring to achieve sealing with the M4 bolt. TODO image
 
+Make sure that the inner diameter of both sides of the tube are deburred and lightly chamfered with sandpaper or a file. Clean the inside of the tube.
+
 Slide the tube over the entire battery. Some gentle pressure and a light coating of grease may be required. TODO image
+
 _Note - if too much force is used, the heatshrink may bunch and rip, possibly shorting the battery. Go gently.
 
 Bolt on the remaining end-cap with o-ring and lubriant. Make sure that the o-ring is engaged with the tube. TODO image
