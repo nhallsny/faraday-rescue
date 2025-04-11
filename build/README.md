@@ -36,17 +36,19 @@ This is a build guide for assembling a faraday rescue battery.
 |Molex / 0510210500       |ONN RCPT HSG 5POS 1.25MM      |1         | Digikey | 
 |Molex / 0510210400       |CONN RCPT HSG 4POS 1.25MM     |1         | Digikey |
 |TE 929990-1              | CONTACT SOCKET 13-17AWG CRIMP|2         | Digikey |
-| 42mmx0.9mm thickness Ti | Tube, 568mm long             | 1        | https://www.ebay.com/itm/174293717819  |
+| (Preferred) 42mmx0.9mm thickness Ti | Tube, 568mm long             | 1        | https://www.ebay.com/itm/174293717819  |
+| (Backup, Verified) BT60 Fiberglass Tube, Cut to Length | Tube, 568mm long             | 1        | [Mach 1 Rocketry](https://www.mach1rocketry.com/product-page/fiberglass-airframe-tubes)  |
+| (Backup), Untested, 42mm x 1.0mm thickness, Cut to Length | Tube, 568mm long             | 1        | Ebay or similar |
 | a18051400ux0423     | Thin Heatshrink PVC, 70mm flat|            | 1        | Amazon   |
 | Pre-wired Julet Connector 200mm | 4 pin (blue) Julet connector, male | 1 | Amazon |
 | Pre-wired Julet Connector 200mm | 5 pin (green) Julet connector female | 1 | Amazon |
 | 1289N171                | End-cap o-ring               | 2        | https://www.mcmaster.com/1289N171/                                    |
-| O-ring lube     | O-ring Lubricant, Silicone   | 1        | Local hardware store                                                  |
+| O-ring lube     | O-ring Lubricant, Silicone or other   | 1        | Local hardware store                                                  |
 | 97163A152               | Insert, M4, 5mm long         | 2        | https://www.mcmaster.com/97163A152/                                   |
 | Dow 738                 | RTV Sealant                  | 1        | https://www.mcmaster.com/1832A51/                                     |
 | 91292A027               | M3 Bolts                     | 18       | https://www.mcmaster.com/91292A027/                                   |
 | 93625A100               | M3 Locknuts                  | 18       | https://www.mcmaster.com/93625A100/                                   |
-| Loctite 4861            | CA flexible adhesive         | 1        | https://www.mcmaster.com/74795A74/                                    |
+| Loctite 4861 or similar medium viscosity glue           | CA flexible adhesive         | 1        | https://www.mcmaster.com/74795A74/                                    |
 | 5233T358                | Small O-rings                | 2        | https://www.mcmaster.com/5233T358/                                    |
 | 90991A121               | End-cap bolts, non-wire side | 1        | https://www.mcmaster.com/90991A121/                                   |
 | 90991A124               | End-cap bolts, wire side     | 1        | https://www.mcmaster.com/90991A124/                                   |
@@ -56,7 +58,7 @@ This is a build guide for assembling a faraday rescue battery.
 You’ll need 8x of these modules:
 ![image](https://github.com/user-attachments/assets/8e18ad41-89e3-40d0-87c4-394e4deba327)
 
-Pre-assembly 16 end plates by gently placing the tabs and press-fitting the nylon locknut
+Pre-assemble 16 end plates by gently placing the tabs and press-fitting the nylon locknut
 ![image](https://github.com/user-attachments/assets/5958920a-513e-4c46-99d9-5ee023f848cd)
 
 Place the end-caps onto the batteries with the battery polarity as shown.
