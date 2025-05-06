@@ -217,9 +217,13 @@ Use this to turn the battery on and off and connect it to RS485
 Note - COLORS ARE NOT STANDARDIZED ON THESE AMAZON CABLES. Check your pinouts!
 
 PCB Pin 1 - GND----------Red------GND----BUTTON
+
 PCB Pin 2 - BUTTON ------Green----BUTTON
+
 PCB Pin 3 - RS485 A -----Black----RS485 A
+
 PCB Pin 4 - RS485 B -----White----RS485 B
+
 
 ![image](https://github.com/user-attachments/assets/bc11411e-3299-48f3-a888-be2b0ae08cab)
 
