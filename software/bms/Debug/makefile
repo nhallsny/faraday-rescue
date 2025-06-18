@@ -84,8 +84,8 @@ all: main-build
 main-build: faraday_stm32_bms.elf secondary-outputs
 
 # Tool invocations
-faraday_stm32_bms.elf faraday_stm32_bms.map: $(OBJS) $(USER_OBJS) C:\Users\776\Documents\GitHub\faraday-rescue\software\bms\STM32L010K8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "faraday_stm32_bms.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\776\Documents\GitHub\faraday-rescue\software\bms\STM32L010K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="faraday_stm32_bms.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+faraday_stm32_bms.elf faraday_stm32_bms.map: $(OBJS) $(USER_OBJS) C:\Users\natha\Documents\GitHub\faraday-rescue\software\bms\STM32L010K8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "faraday_stm32_bms.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\natha\Documents\GitHub\faraday-rescue\software\bms\STM32L010K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="faraday_stm32_bms.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
