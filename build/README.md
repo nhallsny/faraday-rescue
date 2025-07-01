@@ -177,7 +177,10 @@ Slide the tube over the entire battery. Some gentle pressure and a light coating
 
 _Note - if too much force is used, the heatshrink may bunch and rip, possibly shorting the battery. Go gently.
 
-Bolt on the remaining end-cap with o-ring and lubriant. Make sure that the o-ring is engaged with the tube. TODO image
+Bolt on the remaining end-cap with o-ring and lubriant. Make sure that the o-ring is engaged with the tube.
+
+![image](https://github.com/user-attachments/assets/1bb5d22a-0ab2-4ecf-97ce-3505ec6de82e)
+
 
 Final test procedure
 | Test                    |Expected Result               | Tool |
