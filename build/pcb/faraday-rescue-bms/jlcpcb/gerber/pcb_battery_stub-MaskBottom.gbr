@@ -1,0 +1,23 @@
+%TF.GenerationSoftware,KiCad,Pcbnew,8.0.5*%
+%TF.CreationDate,2025-07-01T10:48:08-04:00*%
+%TF.ProjectId,pcb_battery_stub,7063625f-6261-4747-9465-72795f737475,rev?*%
+%TF.SameCoordinates,Original*%
+%TF.FileFunction,Soldermask,Bot*%
+%TF.FilePolarity,Negative*%
+%FSLAX46Y46*%
+G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
+G04 Created by KiCad (PCBNEW 8.0.5) date 2025-07-01 10:48:08*
+%MOMM*%
+%LPD*%
+G01*
+G04 APERTURE LIST*
+%ADD10O,1.400000X6.600000*%
+G04 APERTURE END LIST*
+D10*
+%TO.C,BT8*%
+X490000000Y-96500000D03*
+X555250000Y-96500000D03*
+X490000000Y-80600000D03*
+X555250000Y-80600000D03*
+%TD*%
+M02*
