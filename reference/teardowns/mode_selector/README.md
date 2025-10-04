@@ -5,6 +5,9 @@
 - Water ingress: stress cracking on the plastic housing allows moisture into the pc
 - M5 Connector failure: connectors can go high resistance or have water ingress
 
+## Bike Behaviors
+- If the mode selector is disconnected or comms messages are not received, the bike will default to 'low' boost.
+
 ## Teardown Notes
 
 The mode selectoris a small PCB mounted on the handlebars of the bike which has two functions:
