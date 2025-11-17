@@ -43,6 +43,7 @@ This is a build guide for assembling a faraday rescue battery.
 | a21042700ux0068     | Thin Heatshrink PVC, 70mm flat, preferably clear|            | 1        | Amazon/Uxcell   |
 | Pre-wired Julet Connector 200mm | 4 pin (blue) Julet connector, male | 1 | Amazon |
 | Pre-wired Julet Connector 200mm | 5 pin (green) Julet connector female | 1 | Amazon |
+| 15mm Breather Patches| 15mm self-adhesive Gore stickers | 1 | https://www.dapperlighting.com/products/15mm-breather-patches?variant=49163249484050 |
 | 1289N171                | End-cap o-ring               | 2        | https://www.mcmaster.com/1289N171/                                    |
 | O-ring lube     | O-ring Lubricant, Silicone or other   | 1        | Local hardware store                                                  |
 | 97163A152               | Insert, M4, 5mm long         | 2        | https://www.mcmaster.com/97163A152/                                   |
