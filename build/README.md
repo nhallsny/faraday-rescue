@@ -128,20 +128,26 @@ Wipe the surface with isopropanol, let dry, and the adhere the the vent to the o
 
 
 Pre-crimp the four wires 
-- Positive Power (crimp bike end with TE crimp)
-- Negative Power (crimp bike end with TE crimp)
+- Positive Power (crimp bike end with TE female crimp)
+- Negative Power (crimp bike end with TE female crimp)
 - RS-485 (Light Blue 4-pin Julet Connector, Male, with Picoblade crimps)
   ![image](https://github.com/user-attachments/assets/076afced-0ad5-4b8b-b910-d19ff758b152)
   ![image](https://github.com/user-attachments/assets/f80215be-b8a0-4d96-bdf8-c1df195cedbf)
+  <img width="686" height="360" alt="image" src="https://github.com/user-attachments/assets/b1653e93-be82-4a7f-b606-2a260e2d44a6" />
+  <img width="656" height="525" alt="image" src="https://github.com/user-attachments/assets/5d3d3f51-9ffe-4103-9c3f-e31b7446f5c5" />
+
+
 
 
 - SWD Programming Header (Green 5-Pin Julet Connector, Female, with picoblade crimps)
 - ![image](https://github.com/user-attachments/assets/44b4b0e8-8ed8-4134-92c3-ba29458a7ebc)
 - ![image](https://github.com/user-attachments/assets/d735ef0e-cef9-4e2a-a837-7d917d903781)
+- <img width="686" height="360" alt="image" src="https://github.com/user-attachments/assets/3840ee08-4b63-4bea-a8e8-149658de957f" />
+<img width="809" height="646" alt="image" src="https://github.com/user-attachments/assets/2d2a15bc-88f8-487c-ba1a-6ff95d7dc9c8" />
 
 
 ![image](https://github.com/user-attachments/assets/75d6984b-1a5e-4671-bc0b-7aac4ad66e07)
-TODO - include crimped power wire and polarity diagram
+
 
 Apply a bit of thick tape (I used fiberglass tape) to prevent the thin wires from getting cut by the battery tab
 ![image](https://github.com/user-attachments/assets/fa5544eb-1182-4457-9afe-faeebd5dc013)
@@ -149,8 +155,12 @@ Apply a bit of thick tape (I used fiberglass tape) to prevent the thin wires fro
 Insert the power wires into the printed housing
 ![image](https://github.com/user-attachments/assets/bb1b3d3f-5da7-4b2e-b256-cf995cdc2658)
 
-Pass the power wires through the holes drilled. Solder the XT30 to the backside
-TODO - include image of XT30 soldered on backside
+Pass the power wires through the holes drilled (no picture)
+
+Solder the XT30 to the backside
+
+<img width="879" height="793" alt="image" src="https://github.com/user-attachments/assets/320dcb19-ddf6-4786-b279-c4f679bea147" />
+
 
 Pot the back of the housing with DOW 738 (in green). Use a toothpick to make sure that the coverage is 100%
 ![image](https://github.com/user-attachments/assets/5c6b1237-7f63-4169-bf57-5ccb5373413d)
@@ -160,21 +170,26 @@ Wait for the DOW 738 to dry
 Flash the .hex file onto the STM32 and test your new battery! If you have flashed with LEDS = 1, then the CHG and DSG lights should light up. If not, try shorting BUTTON and GND. TODO image
 _Note - the LEDs consume significant power and cause heating of the linear reg. I suggest flashing with LEDS = 0 after debugging_
 _Note 2 - I made a 'faraday on/off' harness with RS485 and the on/off button broken out. See 'tools' section below_
+
+
 ![image](https://github.com/user-attachments/assets/9f96c159-753c-4f99-91f4-1391e0d92ff2)
 
 
-When satisfied, heat-shrink the battery.
+When satisfied, heat-shrink the battery. This takes a bit of practice to get a consistent diameter (no wrinkles allowed to fit in a 40mm tube), make sure you have extra heatshrink to try a few times. I heated the cells first to remove wrinkles, then tensioned the heatshrink by heating the valleys.
 
 ![image](https://github.com/user-attachments/assets/f037a7bf-b435-4e80-9f80-069b4c5ce7dd)
 
 
-Apply a light coat of o-ring lubricant on the o-rings and install on the aluminum end caps.  TODO image
+Apply a light coat of o-ring lubricant on the o-rings and install o-rings on the aluminum end caps
 
-Install the wire-side cap (if you haven't already). Use the small 4mm ID o-ring to achieve sealing with the M4 bolt. TODO image
+<img width="548" height="818" alt="image" src="https://github.com/user-attachments/assets/a51de373-7dea-4b55-aa79-af57996a5df3" />
 
-Make sure that the inner diameter of both sides of the tube are deburred and lightly chamfered with sandpaper or a file. Clean the inside of the tube.
 
-Slide the tube over the entire battery. Some gentle pressure and a light coating of grease may be required. TODO image
+Install the wire-side cap (if you haven't already). Use the small 4mm ID o-ring to achieve sealing with the M4 bolt. (no picture)
+
+Make sure that the inner diameter of both sides of the tube are deburred and lightly chamfered with sandpaper or a file. Burrs and sharp edges are your enemy. Clean the inside of the tube.
+
+Slide the tube over the entire battery. Some gentle pressure and a light coating of grease may be required. (no picture)
 
 _Note - if too much force is used, the heatshrink may bunch and rip, possibly shorting the battery. Go gently.
 
@@ -189,7 +204,7 @@ Final test procedure
 | Charge                  | Cut-off around 4.2V                   | 2A, 51V power supply or Faraday Charger with DIY harness        | 
 | Discharge               | Cut-off around 2.7V                | 1-5A discharge through power resistor or programmable load        | 
 | Verify balance          | Almost no imbalance (<0.020V)         | Faraday BMS Tester        |
-| Check temperatures      | 4x rational temperatures              | STMStudio Direct Memory Address Reader (see software documentation      | 
+| Check temperatures      | 4x rational temperatures              | STMStudio Direct Memory Address Reader (see software documentation)      | 
 
 # Tools
 
