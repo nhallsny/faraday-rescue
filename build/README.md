@@ -34,13 +34,13 @@ This is a build guide for assembling a faraday rescue battery.
 | Keyelco 5104            | Jumpers between PCBs         | 4        | Digikey                                                               |
 | Wire 16ga               | Power wire, red/black        | 2        | Digikey                                                               |
 |Molex / 0500798100       |26-28 Awg Picoblade Crimp     | 9        | Digikey |
-|Molex / 0510210500       |ONN RCPT HSG 5POS 1.25MM      |1         | Digikey | 
+|Molex / 0510210500       |CONN RCPT HSG 5POS 1.25MM      |1         | Digikey | 
 |Molex / 0510210400       |CONN RCPT HSG 4POS 1.25MM     |1         | Digikey |
 |TE 929990-1              | CONTACT SOCKET 13-17AWG CRIMP|2         | Digikey |
-| (Preferred) 42mmx0.9mm thickness Ti | Tube, 568mm long             | 1        | https://www.ebay.com/itm/174293717819  |
+| (Preferred) 42mmx0.9mm thickness Ti | Tube, 568mm long             | 1        | WEN Titanium --> https://www.ebay.com/itm/174293717819  |
 | (Backup, Verified) BT60 Fiberglass Tube, Cut to Length | Tube, 568mm long             | 1        | [Mach 1 Rocketry](https://www.mach1rocketry.com/product-page/fiberglass-airframe-tubes)  |
-| (Backup), Untested, 42mm x 1.0mm thickness, Cut to Length | Tube, 568mm long             | 1        | Ebay or similar |
-| a18051400ux0423     | Thin Heatshrink PVC, 70mm flat|            | 1        | Amazon   |
+| (Backup, Verified) Carbon Fiber, 42mm x 1.0mm thickness, Cut to Length | Tube, 568mm long             | 1        | [Ebay or similar](https://www.ebay.ca/itm/132443490003) |
+| a21042700ux0068     | Thin Heatshrink PVC, 70mm flat, preferably clear|            | 1        | Amazon/Uxcell   |
 | Pre-wired Julet Connector 200mm | 4 pin (blue) Julet connector, male | 1 | Amazon |
 | Pre-wired Julet Connector 200mm | 5 pin (green) Julet connector female | 1 | Amazon |
 | 1289N171                | End-cap o-ring               | 2        | https://www.mcmaster.com/1289N171/                                    |
