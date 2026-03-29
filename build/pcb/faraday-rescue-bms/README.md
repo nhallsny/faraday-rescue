@@ -4,7 +4,6 @@ PCB attached to battery modules that measures voltages, protects battery, manage
 
 ## Revision table
 ### Release 2.1
-In progress. Planned changes:
 - Change RS485 TVS diodes to bidirectional
 
 ### Release 2.0	
@@ -46,5 +45,9 @@ For the smaller stub PCB:
 - 1mm board thickness
 - 1oz copper
 - Higher Tg material to avoid degradation of insulation during operation
+
+Ordering parameters from JLCPCB:
+![image](https://github.com/user-attachments/assets/d0957980-3816-4d8a-9568-1d07f6bb66f6)
+
 
 

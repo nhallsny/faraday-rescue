@@ -401,8 +401,8 @@ uint8_t UART_PrepBatteryStatusMessage2() {
 	UART_TxData[1] = 0x03;
 	UART_TxData[2] = 0x02;
 	UART_TxData[3] = 0x00;
-	// UART_TxData[4] = 0x19; old hard coded value
-	UART_TxData[4] = batt.CellMaxT;
+	UART_TxData[4] = 0x19; //old hard coded value
+	//UART_TxData[4] = batt.CellMaxT;
 
 	//add crc in reverse byte order
 	uint16_t crc = UART_CRC(UART_TxData, 5);
