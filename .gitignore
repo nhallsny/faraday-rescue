@@ -17,3 +17,5 @@ build\pcb\faraday-rescue-bms/
 fp-info-cache
 fp-lib-table
 sym-lib-table
+*.ini
+*.ini
